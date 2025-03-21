@@ -1,7 +1,11 @@
 class DatabaseTable():
-    def __init__(self, name, fields=[]):
+    def __init__(self, name, fields=None):
         self.name = name
-        self.fields = fields
+
+        if fields is not None:
+            self.fields = fields    
+        else:
+            self.fields = []
 
     def addField(self, field):
         self.fields.append(field)

@@ -1,9 +1,13 @@
 from internal.models.DatabaseTable import DatabaseTable
 
 class DatabaseSchema():
-    def __init__(self, name, tables=[]):
+    def __init__(self, name, tables=None):
         self.name = name
-        self.tables = tables
+
+        if tables is not None:
+            self.tables = tables
+        else:
+            self.tables = []
     
     def addTable(self, table):
         self.tables.append(table)

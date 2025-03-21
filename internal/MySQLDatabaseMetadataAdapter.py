@@ -87,11 +87,13 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
 
                     currentSchema = schemas[-1]
 
-                    currentSchema.getOrAddtable(data["TABLE_NAME"]).addField(DatabaseField(
-                        name=data["COLUMN_NAME"],
-                        # The returned types are standarized with the objective of not having to know the actual database motor used.
-                        type=MySQLDatabaseMetadataAdapter.mysqlTypesToStandarTypes[data["DATA_TYPE"]] 
-                    ))
+                    currentSchema.getOrAddtable(data["TABLE_NAME"]).addField(
+                        DatabaseField(
+                            name=data["COLUMN_NAME"],
+                            # The returned types are standarized with the objective of not having to know the actual database motor used.
+                            type=MySQLDatabaseMetadataAdapter.mysqlTypesToStandarTypes[data["DATA_TYPE"]] 
+                        )
+                    )
 
                     data = cursor.fetchone()
 
