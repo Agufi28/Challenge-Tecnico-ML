@@ -1,5 +1,6 @@
-from abc import ABC, abstractmethod
+from internal.models.DatabaseTable import DatabaseTable
 
+from abc import ABC, abstractmethod
 class DatabaseMetadataAdapter(ABC):
 
     """
@@ -14,5 +15,5 @@ class DatabaseMetadataAdapter(ABC):
         :param dataSampleSize: Set to any n positive integer in order to get a random sample of up to n values of the column. Note: If the column contains less than n values, all the values will be fetched.
     """
     @abstractmethod
-    def getStructure(self, dataSampleSize=0):
+    def getStructure(self, dataSampleSize=0) -> list[DatabaseTable]:
         pass
