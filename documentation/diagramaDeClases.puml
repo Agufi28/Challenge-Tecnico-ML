@@ -1,0 +1,76 @@
+/@startuml ChallengeTecnicoML
+
+abstract class DatabaseMetadataAdapter{
+    getStructure(dataSampleSize=0): list[DatabaseSchema]
+}
+
+class MySQLDatabaseMetadataAdapter extends DatabaseMetadataAdapter{
+    __init__(host, port, username, password)
+}
+
+enum FieldDataTypes{
+    STRING
+    INTEGER
+    DECIMAL
+    BOOLEAN
+    BINARY
+    TIME
+    DATE
+    DATETIME
+}
+
+class DatabaseField{
+    name: str
+    type: FieldType
+    dataSample: list[Any]
+    tags: dict[ControlTag, int]
+
+    __init__(name: str, type: FieldDataTypes): DatabaseField
+    getName(): str
+    updateTags(tags: dict[ControlTag, int]): None
+}
+
+DatabaseField --> "*" ControlTag
+DatabaseField --> FieldDataTypes
+
+class DatabaseTable{
+    name: str
+    fields: list[DatabaseField]
+
+    __init__(name, fields=None): DatabaseTable
+    addField(field: DatabaseField): None
+    getName(): str
+    getFields(): list[DatabaseField]
+    getLastField(): DatabaseField
+}
+
+DatabaseTable -> "*" DatabaseField
+
+class DatabaseSchema{
+    name: str
+    tables: list[DatabaseTable]
+
+    addTable(table: DatabaseTable): None
+    getName(): str
+    getTables(): list[DatabaseTable]
+    getLastTable(): DatabaseTable
+    getOrAddTable(name: str): DatabaseTable
+}
+
+DatabaseSchema -> "*" DatabaseTable
+
+class ControlTag{
+    name: str
+
+    __init__(name: str): ControlTag
+}
+
+abstract class Control{
+    __init__(name: str, affectedTags: dict[ControlTag, int])
+    executeOn(field: DatabaseField): None
+}
+
+Control ..> "*" ControlTag
+Control ..> DatabaseField
+
+/@enduml
