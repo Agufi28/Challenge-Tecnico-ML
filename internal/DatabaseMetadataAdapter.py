@@ -1,4 +1,4 @@
-from internal.models.DatabaseTable import DatabaseTable
+from internal.models.DatabaseSchema import DatabaseSchema
 
 from abc import ABC, abstractmethod
 class DatabaseMetadataAdapter(ABC):
@@ -7,7 +7,7 @@ class DatabaseMetadataAdapter(ABC):
         Must be implemented! 
         
         This method should handle the connection to the database using the correspondig driver, 
-        fetch the structure, parse it and return a list of DatabaseTable objects. 
+        fetch the structure, parse it and return a list of DatabaseSchema objects. 
 
         The idea behind this architecture is to allow an easy support for different database types. 
         The only neccesary change would be adding a new child of this class with the corresponding implementation. 
@@ -15,5 +15,5 @@ class DatabaseMetadataAdapter(ABC):
         :param dataSampleSize: Set to any n positive integer in order to get a random sample of up to n values of the column. Note: If the column contains less than n values, all the values will be fetched.
     """
     @abstractmethod
-    def getStructure(self, dataSampleSize=0) -> list[DatabaseTable]:
+    def getStructure(self, dataSampleSize=0) -> list[DatabaseSchema]:
         pass

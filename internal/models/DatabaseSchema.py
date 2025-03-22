@@ -24,7 +24,7 @@ class DatabaseSchema():
         else:
             return self.tables[-1]
         
-    def getOrAddtable(self, name):
+    def getOrAddTable(self, name):
         """
             Searches through the known tables of the schema in order to find a table with the desired name. 
             If not found, it adds it and returns the added object

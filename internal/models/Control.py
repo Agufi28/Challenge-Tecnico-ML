@@ -5,6 +5,8 @@ from internal.models.ControlTag import ControlTag
 
 class Control(ABC):
     """
+        This class is a generalization of the controls that can be applied on the DatabaseField in order to classify them on the different categories.
+
         :param name: name of the control
         :param affectedTags: dictionary of the taggs that should be added to the field with their corresponding certanty score. If the tag LAST_NAME should get a 10 points boost when the control match; the dictionary should contain an entry with the tag as key and 10 as value
     """

@@ -87,7 +87,7 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
 
                     currentSchema = schemas[-1]
 
-                    currentSchema.getOrAddtable(data["TABLE_NAME"]).addField(
+                    currentSchema.getOrAddTable(data["TABLE_NAME"]).addField(
                         DatabaseField(
                             name=data["COLUMN_NAME"],
                             # The returned types are standarized with the objective of not having to know the actual database motor used.
