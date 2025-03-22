@@ -8,4 +8,4 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 
 ## Documentación
 
-- [Diagrama de clases UML](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/VersionEnPython/documentation/diagramaDeClases.puml)
+- [Diagrama de clases UML](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/VersionEnPython/documentation/ChallengeTecnicoML.svg)
