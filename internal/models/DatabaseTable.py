@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 from internal.models.Base import Base
 from internal.models.DatabaseField import DatabaseField
 class DatabaseTable(Base):
-    __tablename__ = "tables"
+    __tablename__ = "schema_tables"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(64), nullable=False)

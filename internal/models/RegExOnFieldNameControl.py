@@ -1,9 +1,13 @@
 import re
 
 from internal.models.Control import Control
-from internal.models.ControlTag import ControlTag
+from internal.models.DataTypeTag import DataTypeTag
 
 class RegExOnFieldNameControl(Control):
+    __mapper_args__ = {
+        "polymorphic_identity": "RegExOnFieldName",
+    }
+
     """
         This is a type of control based on the name of the field. Requires a regular expression to match the field to.
 
@@ -11,7 +15,7 @@ class RegExOnFieldNameControl(Control):
         :param affectedTags: dictionary of the taggs that should be added to the field with their corresponding certanty score. If the tag LAST_NAME should get a 10 points boost when the control match; the dictionary should contain an entry with the tag as key and 10 as value
         :param regex: Regular expression used 
     """
-    def __init__(self, name: str, affectedTags: dict[ControlTag, int], regex :str):
+    def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], regex :str):
         super().__init__(name, affectedTags)
         self.regex = regex
 

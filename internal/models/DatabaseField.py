@@ -7,7 +7,9 @@ from sqlalchemy.orm import relationship
 
 from internal.models.Base import Base
 from internal.models.FieldDataTypes import FieldDataTypes
-from internal.models.ControlTag import ControlTag
+from internal.models.FieldTag import FieldTag
+
+from internal.models.DataTypeTag import DataTypeTag
 
 class DatabaseField(Base):
     __tablename__ = "table_fields"
@@ -17,8 +19,10 @@ class DatabaseField(Base):
     name: Mapped[str] = mapped_column(String(64), nullable=False) 
     type: Mapped[FieldDataTypes] = mapped_column(Enum(FieldDataTypes), nullable=False)
     
-    table_id: Mapped[int] = mapped_column(ForeignKey("tables.id"))
+    table_id: Mapped[int] = mapped_column(ForeignKey("schema_tables.id"))
     table = relationship("DatabaseTable", back_populates="fields")
+
+    tags: Mapped[list[FieldTag]] = relationship(back_populates="field")
 
     def __init__(self, name: str, type: FieldDataTypes):
         self.name = name
@@ -28,6 +32,10 @@ class DatabaseField(Base):
     def getName(self) -> str:
         return self.name
     
-    def updateTags(self, tags: dict[ControlTag, int]) -> None:
+    def updateTag(self, tag: DataTypeTag, score: int) -> None:
         # TODO: Implement
+        pass
+
+    def removeUnfoundTags(self):
+        #TODO: Implement
         pass
