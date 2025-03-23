@@ -1,10 +1,11 @@
 from sqlalchemy import String
+from sqlalchemy import ForeignKey
+
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from internal.models.Base import Base
-from internal.models.DatabaseSchema import DatabaseSchema
 from internal.models.DatabaseField import DatabaseField
 class DatabaseTable(Base):
     __tablename__ = "tables"
@@ -12,8 +13,9 @@ class DatabaseTable(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(64), nullable=False)
 
+    schema_id: Mapped[int] = mapped_column(ForeignKey("schemas.id"))
     # This attributtes are required in order to achieve a sound relational structure between the mappedclass objects
-    schema: Mapped[DatabaseSchema] = relationship(back_populates="tables")
+    schema = relationship("DatabaseSchema", back_populates="tables")
     fields: Mapped[list[DatabaseField]] = relationship(back_populates="table")
 
     def __init__(self, name, fields=None):
