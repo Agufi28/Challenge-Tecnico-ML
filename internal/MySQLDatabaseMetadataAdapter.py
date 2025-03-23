@@ -7,7 +7,7 @@ from internal.models.DatabaseSchema import DatabaseSchema
 from internal.models.DatabaseTable import DatabaseTable
 from internal.models.DatabaseField import DatabaseField
 from internal.models.FieldDataTypes import FieldDataTypes
-
+from internal.models.UnsupportedDataTypeException import UnsupportedDataTypeException
 
 
 class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
@@ -86,15 +86,18 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
                         schemas.append(DatabaseSchema(data["TABLE_SCHEMA"]))
 
                     currentSchema = schemas[-1]
-
-                    currentSchema.getOrAddTable(data["TABLE_NAME"]).addField(
-                        DatabaseField(
-                            name=data["COLUMN_NAME"],
-                            # The returned types are standarized with the objective of not having to know the actual database motor used.
-                            type=MySQLDatabaseMetadataAdapter.mysqlTypesToStandarTypes[data["DATA_TYPE"]] 
+                    try:
+                        currentSchema.getOrAddTable(data["TABLE_NAME"]).addField(
+                            DatabaseField(
+                                name=data["COLUMN_NAME"],
+                                # The returned types are standarized with the objective of not having to know the actual database motor used.
+                                type=MySQLDatabaseMetadataAdapter.mysqlTypesToStandarTypes[data["DATA_TYPE"]] 
+                            )
                         )
-                    )
-
+                    except KeyError as e:
+                        #TODO: Agregar el id de la base de datos al mensaje de error.
+                        # Encapsulation of the error into a higher level exception for a more clean error handeling
+                        raise UnsupportedDataTypeException(f"The data type [{data["DATA_TYPE"]}] of the field [{data["TABLE_SCHEMA"]}.{data["TABLE_NAME"]}.{data["COLUMN_NAME"]}] is not supported by the adapter")
                     data = cursor.fetchone()
 
                 #TODO: Fetch the data samples.

@@ -1,0 +1,2 @@
+class UnsupportedDataTypeException(Exception):
+    pass
