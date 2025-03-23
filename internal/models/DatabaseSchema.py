@@ -1,6 +1,19 @@
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+
+from internal.models.Base import Base
 from internal.models.DatabaseTable import DatabaseTable
 
-class DatabaseSchema():
+
+class DatabaseSchema(Base):
+    __tablename__ = "schemas"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(64), nullable=False)
+    tables: Mapped[list[DatabaseTable]] = relationship(back_populates="schema")
+
     def __init__(self, name, tables=None):
         self.name = name
 
