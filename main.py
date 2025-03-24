@@ -105,7 +105,7 @@ async def scanDatabase(id: int, session: SessionDep):
     
     if database is None:
         raise HTTPException(status_code=400, detail="The selected database does not exist or was disabled")
-    
+
     controls = session.scalars(
         select(Control)
     ).all()

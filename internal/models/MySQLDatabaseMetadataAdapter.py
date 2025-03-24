@@ -14,7 +14,7 @@ from internal.models.DatabaseTable import DatabaseTable
 from internal.models.DatabaseField import DatabaseField
 from internal.models.FieldDataTypes import FieldDataTypes
 
-from internal.Secrets import Secrets
+from internal.secrets.Secrets import Secrets
 
 from internal.models.UnsupportedDataTypeException import UnsupportedDataTypeException
 
