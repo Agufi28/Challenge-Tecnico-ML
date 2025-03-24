@@ -17,6 +17,7 @@ class ControlAffectedTag(Base):
     tag_id: Mapped[int] = mapped_column(ForeignKey("datatype_tags.id"))
     affect_score_by: Mapped[int] = mapped_column(nullable=False)
     tag = relationship("DataTypeTag")
+    control = relationship("Control")
 
 
     def __init__(self, control, tag, affectedScoreBy):

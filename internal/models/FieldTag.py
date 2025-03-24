@@ -10,6 +10,11 @@ from internal.models.DataTypeTag import DataTypeTag
 class FieldTag(Base):
     __tablename__ = "field_tags"
 
+    def __init__(self, field, tag, certanty_score):
+        self.tag = tag
+        self.field = field
+        self.certanty_score = certanty_score
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     field_id: Mapped[int] = mapped_column(ForeignKey("table_fields.id"))
@@ -18,3 +23,4 @@ class FieldTag(Base):
     certanty_score: Mapped[int] = mapped_column(nullable=False)
 
     tag: Mapped[DataTypeTag] = relationship()
+    field: Mapped['DatabaseField'] = relationship(back_populates='tags')

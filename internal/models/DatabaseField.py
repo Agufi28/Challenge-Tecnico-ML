@@ -8,8 +8,8 @@ from sqlalchemy.orm import relationship
 from internal.models.Base import Base
 from internal.models.FieldDataTypes import FieldDataTypes
 from internal.models.FieldTag import FieldTag
-
 from internal.models.DataTypeTag import DataTypeTag
+
 
 class DatabaseField(Base):
     __tablename__ = "table_fields"
@@ -21,23 +21,43 @@ class DatabaseField(Base):
 
     table_id: Mapped[int] = mapped_column(ForeignKey("schema_tables.id"))
 
-    tags: Mapped[list[FieldTag]] = relationship()
+    tags: Mapped[list[FieldTag]] = relationship(cascade="all, delete-orphan")
 
 
 
 
     def __init__(self, name: str, type: FieldDataTypes):
         self.name = name
-        self.type = FieldDataTypes
+        self.type = type
         self.dataSample = []
 
     def getName(self) -> str:
         return self.name
-    
+
+    def getOrAddTag(self, tag: DataTypeTag):
+        """
+            Searches through the known tags of the field in order to find one with de desired DataType. 
+            If not found, it adds it and returns the added object
+        """
+        fieldTagsWithTheDesiredDataTypeTag = list(
+            filter(lambda fieldTag: fieldTag.tag_id == tag.id, self.tags)
+        )
+
+        if len(fieldTagsWithTheDesiredDataTypeTag) == 0:
+            newFieldTag = FieldTag(self, tag, 0)
+            self.tags.append(newFieldTag)
+            return newFieldTag
+        else:
+            return fieldTagsWithTheDesiredDataTypeTag[0]
+
     def updateTag(self, tag: DataTypeTag, score: int) -> None:
-        # TODO: Implement
-        pass
+        datatypeTag = self.getOrAddTag(tag)
+        datatypeTag.certanty_score += score
 
     def removeUnfoundTags(self):
         #TODO: Implement
         pass
+
+    def run(self, controls: list['Control']):
+        for control in controls:
+            control.executeOn(self)

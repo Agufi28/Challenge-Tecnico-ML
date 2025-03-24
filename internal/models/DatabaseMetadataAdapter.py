@@ -16,7 +16,7 @@ class DatabaseMetadataAdapter(Base):
         "polymorphic_on": "type",
     }
 
-    schemas: Mapped[DatabaseSchema] = relationship()
+    schemas: Mapped[list[DatabaseSchema]] = relationship(cascade="all, delete-orphan")
 
     """
         Must be implemented! 
@@ -29,5 +29,15 @@ class DatabaseMetadataAdapter(Base):
 
         :param dataSampleSize: Set to any n positive integer in order to get a random sample of up to n values of the column. Note: If the column contains less than n values, all the values will be fetched.
     """
-    def getStructure(self, dataSampleSize=0) -> list[DatabaseSchema]:
+    
+    def updateStructure(self) -> None:
         raise Exception("Must be implemented!")
+
+    def fetchSamples(self, dataSampleSize=0):
+        raise Exception("Must be implemented!")
+
+    def getStructure(self,  dataSampleSize=0)-> list[DatabaseSchema]:
+        self.updateStructure()
+        if dataSampleSize != 0:
+            self.fetchSamples()
+        return self.schemas

@@ -14,5 +14,6 @@ class DataTypeTag(Base):
     name: Mapped[str] = mapped_column(String(32), nullable=False) 
     description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    def __init__(self, name):
+    def __init__(self, name: str, description: str=None):
         self.name = name
+        self.description = description
