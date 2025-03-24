@@ -1,3 +1,4 @@
+import json
 from typing import Optional, Annotated
 
 from fastapi import FastAPI, Depends
@@ -8,7 +9,6 @@ from sqlalchemy.orm import Session
 
 from internal.models.DatabaseMetadataAdapter import DatabaseMetadataAdapter
 from internal.models.MySQLDatabaseMetadataAdapter import MySQLDatabaseMetadataAdapter
-from api.models.APIDatabaseSchema import APIDatabaseSchema
 
 engine = create_engine("mysql+pymysql://root@127.0.0.1/challengeML")
 
@@ -22,8 +22,9 @@ app = FastAPI()
 
 @app.get("/api/v1/databases")
 async def getDatabases(session: SessionDep):
-    data = [record._mapping for record in session.execute(select(DatabaseMetadataAdapter)).all()]
-    print(data)
+    res = session.execute(select(DatabaseMetadataAdapter)).all()
+    data = [record._asdict()["DatabaseMetadataAdapter"] for record in res]
+
     return data
 
 @app.post("/api/v1/databases/mysql", response_model=None)
