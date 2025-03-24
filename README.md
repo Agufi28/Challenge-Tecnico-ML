@@ -14,6 +14,9 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 - Asumo que todos los controles se realizan a nivel campo y no a nivel tabla o esquema.
 - Decidí utilizar una librería de criptografía llamada Fernet debido a su popularidad en el ámbito de SQLAlchemy. Sin embargo, debido a la implementación utilizada para cifrar los campos utilizando un [TypeDecorator](https://docs.sqlalchemy.org/en/20/core/custom_types.html#sqlalchemy.types.TypeDecorator), la adaptación de este sistema a otros métodos criptográficos resulta trivial.
 
+## Deudas técnicas
+- Los creadores de [FastAPI sugieren](https://fastapi.tiangolo.com/tutorial/sql-databases) una forma más elegante de retornar los datos pero requiere modelar las entidades con un objeto proxy creado por ellos que se encuentra en una versión beta. Si bien tiene gran parte de la funcionalidad de SQLAlchemy, debido a la complejidad de los mapeos de herencia utilizados y a que no soporta completamente las funcionalidades de SQLAlchemy no fui capaz de adaptar fácilmente la solución al nuevo modelo. No digo que sea imposible sino que tras dedicarle aproximadamente 6hs, considero que los beneficios obtenibles de lograr dicha implementación no compensan el tiempo invertido en hacerlo. En caso de contar con tiempo adicional luego de satisfacer los demás requerimientos, retomaré la tarea de refactorizar el modelo utilizando las clases provistas por [SQLModel](https://sqlmodel.tiangolo.com/)
+
 ## Documentación
 
 ### Variables de entorno requeridas
@@ -26,3 +29,11 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 
 ### Diagrama entidad relación (DER)
 ![DER](/documentation/DER.png)
+
+### Variables de entorno
+- `DATABASE_ENCRYPTION_KEY`: Debe ser generada utilizando un string aleatorio de 32 bytes encodeado con `URL-Safe Base64`
+- `DATABASE_USER`: Nombre de usuario para la conexión con la base de datos que guardará la información del sistema
+- `DATABASE_PASSWORD`: Clave para el usuario especificado en `DATABASE_USER`
+- `DATABASE_HOST`: IP o [FQDN](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) de la base de datos que gruardará la información del sistema 
+- `DATABASE_PORT`: Puerto de la base de datos que guardará la información del sistema
+- `DATABASE_NAME`: Nombre de la base de datos que guardará la información del sistema

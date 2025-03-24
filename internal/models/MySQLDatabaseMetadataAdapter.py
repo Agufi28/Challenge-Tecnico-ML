@@ -14,7 +14,7 @@ from internal.models.DatabaseTable import DatabaseTable
 from internal.models.DatabaseField import DatabaseField
 from internal.models.FieldDataTypes import FieldDataTypes
 
-from internal.Secrets import Secrets
+from internal.secrets.Secrets import Secrets
 
 from internal.models.UnsupportedDataTypeException import UnsupportedDataTypeException
 
@@ -69,7 +69,7 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
         self.username = username
         self.password = password
 
-    def getStructure(self, dataSampleSize=0) -> list[DatabaseTable]:
+    def updateStructure(self):
         with pymysql.connect(
             host=self.host,
             port=self.port,
@@ -93,17 +93,15 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
                     ORDER BY t.TABLE_SCHEMA, t.TABLE_NAME
                 """)
 
-                # By the end of this method, this list will contain all the found schemas and thir corresponding columns and fields
-                schemas = []
-
                 data = cursor.fetchone()
                 while data is not None:
                     # This loop actually contains three nested control breaks, thus only the fist one is evident. 
                     # The other two are contained within the used class methods.
-                    if len(schemas) == 0 or schemas[-1].getName() != data["TABLE_SCHEMA"]:
-                        schemas.append(DatabaseSchema(data["TABLE_SCHEMA"]))
+                    if len(self.schemas) == 0 or self.schemas[-1].getName() != data["TABLE_SCHEMA"]:
+                        self.schemas.append(DatabaseSchema(data["TABLE_SCHEMA"]))
 
-                    currentSchema = schemas[-1]
+                    currentSchema = self.schemas[-1]
+
                     try:
                         currentSchema.getOrAddTable(data["TABLE_NAME"]).addField(
                             DatabaseField(
@@ -117,6 +115,3 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
                         # Encapsulation of the error into a higher level exception for a more clean error handeling
                         raise UnsupportedDataTypeException(f"The data type [{data["DATA_TYPE"]}] of the field [{data["TABLE_SCHEMA"]}.{data["TABLE_NAME"]}.{data["COLUMN_NAME"]}] is not supported by the adapter")
                     data = cursor.fetchone()
-
-                #TODO: Fetch the data samples.
-                return schemas

@@ -7,17 +7,16 @@ from sqlalchemy.orm import relationship
 
 from internal.models.Base import Base
 from internal.models.DatabaseTable import DatabaseTable
-
+from internal.models.Control import Control
 
 class DatabaseSchema(Base):
     __tablename__ = "schemas"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(64), nullable=False)
-    tables: Mapped[list[DatabaseTable]] = relationship(back_populates="schema")
+    tables: Mapped[list[DatabaseTable]] = relationship(cascade="all, delete-orphan")
 
     database_id: Mapped[int] = mapped_column(ForeignKey("databases.id"))
-    database = relationship("DatabaseMetadataAdapter", back_populates="schemas")
 
     def __init__(self, name, tables=None):
         self.name = name
@@ -27,21 +26,15 @@ class DatabaseSchema(Base):
         else:
             self.tables = []
     
-    def addTable(self, table):
+    def getName(self) -> str:
+        return self.name
+
+    def addTable(self, table) -> None:
         self.tables.append(table)
 
-    def getName(self):
-        return self.name
-    
     def getTables(self):
         return self.tables
-    
-    def getLastTable(self):
-        if(len(self.tables) == 0):
-            return None
-        else:
-            return self.tables[-1]
-        
+
     def getOrAddTable(self, name):
         """
             Searches through the known tables of the schema in order to find a table with the desired name. 
@@ -56,3 +49,7 @@ class DatabaseSchema(Base):
             return newTable
         else:
             return tablesWithTheDesiredName[0]
+
+    def run(self, controls: list[Control]):
+        for table in self.getTables():
+            table.run(controls)

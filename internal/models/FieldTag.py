@@ -6,9 +6,14 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from internal.models.Base import Base
-
+from internal.models.DataTypeTag import DataTypeTag
 class FieldTag(Base):
     __tablename__ = "field_tags"
+
+    def __init__(self, field, tag, certanty_score):
+        self.tag = tag
+        self.field = field
+        self.certanty_score = certanty_score
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
@@ -17,5 +22,5 @@ class FieldTag(Base):
 
     certanty_score: Mapped[int] = mapped_column(nullable=False)
 
-    field = relationship("DatabaseField", back_populates="tags")
-    tag = relationship("DataTypeTag", back_populates="detectedOnFields")
+    tag: Mapped[DataTypeTag] = relationship()
+    field: Mapped['DatabaseField'] = relationship(back_populates='tags')

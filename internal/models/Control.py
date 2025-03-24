@@ -1,3 +1,4 @@
+from typing import Any
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.orm import Mapped
@@ -9,12 +10,12 @@ from internal.models.DatabaseField import DatabaseField
 from internal.models.ControlAffectedTag import ControlAffectedTag
 from internal.models.DataTypeTag import DataTypeTag
 
-
 class Control(Base):
     __tablename__ = "controls"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    type: Mapped[str] = mapped_column(String(10))
+    type: Mapped[str] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(255))
 
     # The size of this column is arbitrarly defined. 
     # The idea behind it is to store the required data to perform the control in any stringified format. 
@@ -22,7 +23,7 @@ class Control(Base):
     # e.g. if a control checks if the value is contained on a list, 
     # the data may be a strigified json array and the control implementation would be responsable for parsing it back to an array when needed
     raw_data: Mapped[str] = mapped_column(Text()) 
-    affectedTags: Mapped[list[ControlAffectedTag]] = relationship("ControlAffectedTag")
+    affectedTags: Mapped[list[ControlAffectedTag]] = relationship(back_populates='control')
 
     __mapper_args__ = {
         "polymorphic_on": "type",
@@ -42,7 +43,10 @@ class Control(Base):
     def __conditionMatches(self, field: DatabaseField) -> bool:
         raise Exception("Must be implemented!")
 
+    def getData(self) -> dict[str, Any]:
+        raise Exception("Must be implemented!")
+
     def executeOn(self, field: DatabaseField):
         if self.__conditionMatches(field):
             for affectedTag in self.affectedTags:
-                field.updateTags(affectedTag.tag, affectedTag.affect_score_by)
+                field.updateTag(affectedTag.tag, affectedTag.affect_score_by)
