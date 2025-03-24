@@ -1,4 +1,5 @@
 from sqlalchemy import String
+from sqlalchemy import Text
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -20,8 +21,7 @@ class Control(Base):
     # Each control type will be responsable for knwoing how to parse it appropietly for reading and storing. 
     # e.g. if a control checks if the value is contained on a list, 
     # the data may be a strigified json array and the control implementation would be responsable for parsing it back to an array when needed
-    # P.S. A text field could also be used for performance reasons
-    raw_data: Mapped[str] = mapped_column(String(1024)) 
+    raw_data: Mapped[str] = mapped_column(Text()) 
     affectedTags: Mapped[list[ControlAffectedTag]] = relationship("ControlAffectedTag")
 
     __mapper_args__ = {

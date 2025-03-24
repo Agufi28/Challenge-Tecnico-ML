@@ -17,9 +17,13 @@ class RegExOnFieldNameControl(Control):
     """
     def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], regex :str):
         super().__init__(name, affectedTags)
-        self.regex = regex
+        self.data = regex
+
+    # This is the implementation of the get data for the regex scenario. No special parsing is needed since the regex is an string and the raw_data is too
+    def getRegEx(self):
+        return self.raw_data
 
     # This is the implementation for the abstract private method __conditionMatches of the parent class Control
     def _Control__conditionMatches(self, field):
         # The condition matches if the regex finds any conincidence on the field name
-        return re.search(self.regex, field.getName()) is not None
+        return re.search(self.getRegEx(), field.getName()) is not None

@@ -18,3 +18,4 @@ class FieldTag(Base):
     certanty_score: Mapped[int] = mapped_column(nullable=False)
 
     field = relationship("DatabaseField", back_populates="tags")
+    tag = relationship("DataTypeTag", back_populates="detectedOnFields")

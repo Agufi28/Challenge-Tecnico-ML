@@ -18,11 +18,14 @@ class DatabaseField(Base):
     # The maximum size of the column name is setted based on the MySQL specification. An extended value should be considered in case support for new database engines is added
     name: Mapped[str] = mapped_column(String(64), nullable=False) 
     type: Mapped[FieldDataTypes] = mapped_column(Enum(FieldDataTypes), nullable=False)
-    
+
     table_id: Mapped[int] = mapped_column(ForeignKey("schema_tables.id"))
     table = relationship("DatabaseTable", back_populates="fields")
 
     tags: Mapped[list[FieldTag]] = relationship(back_populates="field")
+
+
+
 
     def __init__(self, name: str, type: FieldDataTypes):
         self.name = name
