@@ -6,18 +6,25 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
+from internal.models.crypto.EncryptedString import EncryptedString
+from internal.models.crypto.EncryptedInt import EncryptedInt
 from internal.models.DatabaseMetadataAdapter import DatabaseMetadataAdapter
 from internal.models.DatabaseSchema import DatabaseSchema
 from internal.models.DatabaseTable import DatabaseTable
 from internal.models.DatabaseField import DatabaseField
 from internal.models.FieldDataTypes import FieldDataTypes
 
-from internal.models.UnsupportedDataTypeException import UnsupportedDataTypeException
+from internal.Secrets import Secrets
 
+from internal.models.UnsupportedDataTypeException import UnsupportedDataTypeException
 
 class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
     __tablename__ = "mysql_databases"
     id: Mapped[int] = mapped_column(ForeignKey("databases.id"), primary_key=True)
+    host: Mapped[str] = mapped_column(EncryptedString(Secrets.getDatabaseEncryptionKey()))
+    port: Mapped[int] = mapped_column(EncryptedInt(Secrets.getDatabaseEncryptionKey()))
+    username: Mapped[str] = mapped_column(EncryptedString(Secrets.getDatabaseEncryptionKey()))
+    password: Mapped[str] = mapped_column(EncryptedString(Secrets.getDatabaseEncryptionKey()))
 
     __mapper_args__ = {
         "polymorphic_identity":"mysql",
