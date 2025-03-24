@@ -1,11 +1,11 @@
 import json
-from typing import Optional, Annotated
+from typing import Annotated
 
 from fastapi import FastAPI, Depends, HTTPException
-#from sqlmodel import Session, create_engine
 
 from sqlalchemy import select, create_engine
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
 
 from api.models.ControlsResponse import ControlsResponse
 from api.models.DataTypeTagCreationData import DataTypeTagCreationData
@@ -16,7 +16,11 @@ from api.models.MySQLDatabaseMetadataAdapterCreationData import MySQLDatabaseMet
 from api.models.RegExOnFieldNameControlCreationData import RegExOnFieldNameControlCreationData
 from internal.models.Control import Control
 from internal.models.DataTypeTag import DataTypeTag
+from internal.models.DatabaseField import DatabaseField
 from internal.models.DatabaseMetadataAdapter import DatabaseMetadataAdapter
+from internal.models.DatabaseSchema import DatabaseSchema
+from internal.models.DatabaseTable import DatabaseTable
+from internal.models.FieldTag import FieldTag
 from internal.models.MySQLDatabaseMetadataAdapter import MySQLDatabaseMetadataAdapter
 from internal.models.RegExOnFieldNameControl import RegExOnFieldNameControl
 
@@ -116,3 +120,19 @@ async def scanDatabase(id: int, session: SessionDep):
     
     session.add(database)
     session.commit()
+
+@app.get("/api/v1/databases/{id}/scan")
+async def getDatabaseResults(id: int, session: SessionDep):
+    database = session.scalars(
+        select(DatabaseMetadataAdapter)
+        .where(DatabaseMetadataAdapter.id == id)
+        .options(
+            joinedload(DatabaseMetadataAdapter.schemas)
+            .subqueryload(DatabaseSchema.tables)
+            .subqueryload(DatabaseTable.fields)
+            .subqueryload(DatabaseField.tags)
+            .subqueryload(FieldTag.tag)
+        )
+    ).first()
+
+    return database
