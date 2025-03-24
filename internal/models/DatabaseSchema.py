@@ -14,10 +14,9 @@ class DatabaseSchema(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(64), nullable=False)
-    tables: Mapped[list[DatabaseTable]] = relationship(back_populates="schema")
+    tables: Mapped[list[DatabaseTable]] = relationship()
 
     database_id: Mapped[int] = mapped_column(ForeignKey("databases.id"))
-    database = relationship("DatabaseMetadataAdapter", back_populates="schemas")
 
     def __init__(self, name, tables=None):
         self.name = name

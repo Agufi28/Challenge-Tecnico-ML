@@ -16,7 +16,7 @@ class DatabaseMetadataAdapter(Base):
         "polymorphic_on": "type",
     }
 
-    schemas: Mapped[DatabaseSchema] = relationship(back_populates="database")
+    schemas: Mapped[DatabaseSchema] = relationship()
 
     """
         Must be implemented! 

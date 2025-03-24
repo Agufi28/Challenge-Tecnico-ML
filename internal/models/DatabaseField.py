@@ -20,9 +20,8 @@ class DatabaseField(Base):
     type: Mapped[FieldDataTypes] = mapped_column(Enum(FieldDataTypes), nullable=False)
 
     table_id: Mapped[int] = mapped_column(ForeignKey("schema_tables.id"))
-    table = relationship("DatabaseTable", back_populates="fields")
 
-    tags: Mapped[list[FieldTag]] = relationship(back_populates="field")
+    tags: Mapped[list[FieldTag]] = relationship()
 
 
 

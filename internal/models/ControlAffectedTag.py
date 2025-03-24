@@ -6,6 +6,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from internal.models.Base import Base
+#from internal.models.DataTypeTag import DataTypeTag
 
 class ControlAffectedTag(Base):
     __tablename__ = "control_affected_tags"
@@ -14,11 +15,9 @@ class ControlAffectedTag(Base):
 
     control_id: Mapped[int] = mapped_column(ForeignKey("controls.id"))
     tag_id: Mapped[int] = mapped_column(ForeignKey("datatype_tags.id"))
-
     affect_score_by: Mapped[int] = mapped_column(nullable=False)
+    tag = relationship("DataTypeTag")
 
-    control = relationship("Control", back_populates="affectedTags")
-    tag = relationship("DataTypeTag", back_populates="affectedByControls")
 
     def __init__(self, control, tag, affectedScoreBy):
         self.control = control

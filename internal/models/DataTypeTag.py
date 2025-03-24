@@ -14,9 +14,5 @@ class DataTypeTag(Base):
     name: Mapped[str] = mapped_column(String(32), nullable=False) 
     description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-
-    affectedByControls = relationship("ControlAffectedTag", back_populates="tag")
-    detectedOnFields = relationship("FieldTag", back_populates="tag")
-
     def __init__(self, name):
         self.name = name

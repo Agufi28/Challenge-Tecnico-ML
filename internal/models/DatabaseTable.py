@@ -12,11 +12,10 @@ class DatabaseTable(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(64), nullable=False)
-
     schema_id: Mapped[int] = mapped_column(ForeignKey("schemas.id"))
-    # This attributtes are required in order to achieve a sound relational structure between the mappedclass objects
-    schema = relationship("DatabaseSchema", back_populates="tables")
-    fields: Mapped[list[DatabaseField]] = relationship(back_populates="table")
+    fields: Mapped[list[DatabaseField]] = relationship()
+
+
 
     def __init__(self, name, fields=None):
         self.name = name

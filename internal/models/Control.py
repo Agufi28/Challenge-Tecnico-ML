@@ -9,7 +9,6 @@ from internal.models.DatabaseField import DatabaseField
 from internal.models.ControlAffectedTag import ControlAffectedTag
 from internal.models.DataTypeTag import DataTypeTag
 
-
 class Control(Base):
     __tablename__ = "controls"
 
@@ -22,7 +21,7 @@ class Control(Base):
     # e.g. if a control checks if the value is contained on a list, 
     # the data may be a strigified json array and the control implementation would be responsable for parsing it back to an array when needed
     raw_data: Mapped[str] = mapped_column(Text()) 
-    affectedTags: Mapped[list[ControlAffectedTag]] = relationship("ControlAffectedTag")
+    affectedTags: Mapped[list[ControlAffectedTag]] = relationship()
 
     __mapper_args__ = {
         "polymorphic_on": "type",
