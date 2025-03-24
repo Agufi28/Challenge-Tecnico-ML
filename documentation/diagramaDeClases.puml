@@ -1,10 +1,20 @@
-/@startuml ChallengeTecnicoML
+/@startuml Diagrama de clases UML
 
 abstract class DatabaseMetadataAdapter{
+    id: int
+    schemas: list[DatabaseSchema]
+
     getStructure(dataSampleSize=0): list[DatabaseSchema]
 }
+DatabaseMetadataAdapter --> "*" DatabaseSchema
 
 class MySQLDatabaseMetadataAdapter extends DatabaseMetadataAdapter{
+    host: str
+    port: int
+    username: str
+    password: str
+
+    mysqlTypesToStandarTypes: dict[str, FieldDataTypes]
     __init__(host, port, username, password)
 }
 
@@ -19,22 +29,38 @@ enum FieldDataTypes{
     DATETIME
 }
 
+class FieldTag{
+    id: str
+    field: DatabaseField
+    tag: DataTypeTag
+    certanty_score: int
+}
+FieldTag --> DatabaseField
+FieldTag --> DataTypeTag
+
 class DatabaseField{
+    id: int
     name: str
-    type: FieldType
+    type: FieldDataTypes
+    table: DatabaseTable
+    tags: list[FieldTag]
     dataSample: list[Any]
-    tags: dict[ControlTag, int]
 
     __init__(name: str, type: FieldDataTypes): DatabaseField
     getName(): str
-    updateTags(tags: dict[ControlTag, int]): None
+    updateTag(tag: DataTypeTag, score: int): None
+    removeUnfoundTags(): None
 }
 
-DatabaseField --> "*" ControlTag
 DatabaseField --> FieldDataTypes
+DatabaseField --> DatabaseTable
+DatabaseField --> "*" FieldTag
+DatabaseField ..> DataTypeTag
 
 class DatabaseTable{
+    id: str
     name: str
+    schema: DatabaseSchema
     fields: list[DatabaseField]
 
     __init__(name, fields=None): DatabaseTable
@@ -43,34 +69,59 @@ class DatabaseTable{
     getFields(): list[DatabaseField]
     getLastField(): DatabaseField
 }
-
+DatabaseTable -> DatabaseSchema
 DatabaseTable -> "*" DatabaseField
 
 class DatabaseSchema{
+    id: int
     name: str
     tables: list[DatabaseTable]
+    database: DatabaseMetadataAdapter
 
+    __init__(name, tables=None): DatabaseSchema
     addTable(table: DatabaseTable): None
     getName(): str
     getTables(): list[DatabaseTable]
     getLastTable(): DatabaseTable
     getOrAddTable(name: str): DatabaseTable
 }
-
+DatabaseSchema -> DatabaseMetadataAdapter
 DatabaseSchema -> "*" DatabaseTable
 
-class ControlTag{
+class DataTypeTag{
+    id: id
     name: str
-
-    __init__(name: str): ControlTag
+    description: Optional[str]
+    affectedControls: list[ControlAffectedTag]
+    detectedOnFields: list[FieldTag]
 }
+
+DataTypeTag --> "*" ControlAffectedTag
+DataTypeTag --> "*" FieldTag
+
+class ControlAffectedTag{
+    id: int
+    control: Control
+    tag: DataTypeTag
+
+    __init__(control: Control, tag: DataTypeTag, affectedScoreBy: int): ControlTag
+}
+ControlAffectedTag --> Control
+ControlAffectedTag --> DataTypeTag
 
 abstract class Control{
-    __init__(name: str, affectedTags: dict[ControlTag, int])
+    id: int
+    raw_data: str
+
+    __init__(name: str, affectedTags: dict[DataTypeTag, int])
     executeOn(field: DatabaseField): None
 }
-
-Control ..> "*" ControlTag
+Control ..> "*" ControlAffectedTag
 Control ..> DatabaseField
+
+class RegExOnFieldNameControl extends Control{
+    __init__(name: str, affectedTags: dict[DataTypeTag, int], regex :str): RegExOnFieldNameControl
+    getRegEx(): str
+}
 
 /@enduml
