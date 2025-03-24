@@ -14,6 +14,9 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 - Asumo que todos los controles se realizan a nivel campo y no a nivel tabla o esquema.
 - Decidí utilizar una librería de criptografía llamada Fernet debido a su popularidad en el ámbito de SQLAlchemy. Sin embargo, debido a la implementación utilizada para cifrar los campos utilizando un [TypeDecorator](https://docs.sqlalchemy.org/en/20/core/custom_types.html#sqlalchemy.types.TypeDecorator), la adaptación de este sistema a otros métodos criptográficos resulta trivial.
 
+## Deudas técnicas
+- Los creadores de [FastAPI sugieren](https://fastapi.tiangolo.com/tutorial/sql-databases) una forma más elegante de devolver los datos pero requiere modelar las entidades con un objeto proxy creado por ellos que si bien tiene gran parte de la funcionalidad de SQLAlchemy, debido a la complejidad de los mapeos de herencia utilizados no fuí capaz de adaptarla. No digo que sea imposible, sólo que tras dedicarle aproximadamente 5hs, considero que los beneficios obtenibles de lograr dicha implementación no compensan el tiempo invertido en hacerlo. En caso de contar con tiempo adicional luego de satisfacer los demás requerimientos, retomaré la tarea de refactorizar el modelo utilizando las clases provistas por [SQLModel](https://sqlmodel.tiangolo.com/)
+
 ## Documentación
 
 ### Variables de entorno requeridas
