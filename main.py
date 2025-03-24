@@ -23,8 +23,11 @@ from internal.models.DatabaseTable import DatabaseTable
 from internal.models.FieldTag import FieldTag
 from internal.models.MySQLDatabaseMetadataAdapter import MySQLDatabaseMetadataAdapter
 from internal.models.RegExOnFieldNameControl import RegExOnFieldNameControl
+from internal.secrets.Secrets import Secrets
 
-engine = create_engine("mysql+pymysql://root@127.0.0.1/challengeML")
+engine = create_engine(
+    f"mysql+pymysql://{Secrets.getDatabaseUser()}:{Secrets.getDatabasePassword()}@{Secrets.getDatabaseHost()}:{Secrets.getDatabasePort()}/{Secrets.getDatabaseName()}"
+)
 
 def get_session():
     with Session(engine) as session:

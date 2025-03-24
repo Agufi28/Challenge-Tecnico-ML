@@ -51,8 +51,8 @@ class DatabaseField(Base):
             return fieldTagsWithTheDesiredDataTypeTag[0]
 
     def updateTag(self, tag: DataTypeTag, score: int) -> None:
-        datatypeTag = self.getOrAddTag(tag)
-        datatypeTag.certanty_score += score
+        fieldTag = self.getOrAddTag(tag)
+        fieldTag.certanty_score += score
 
     def removeUnfoundTags(self):
         #TODO: Implement
