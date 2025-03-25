@@ -1,4 +1,4 @@
-/@startuml Diagrama de clases UML
+/@startuml Diagrama de clases UML - Simplificado
 
 abstract class DatabaseMetadataAdapter{
     id: int
@@ -39,7 +39,6 @@ class FieldTag{
 
     __init__(field: DatabaseField, tag: DataTypeTag, certanty_score: int): FieldTag
 }
-FieldTag --> DatabaseField
 FieldTag --> DataTypeTag
 
 class DatabaseField{
@@ -58,10 +57,7 @@ class DatabaseField{
 }
 
 DatabaseField --> FieldDataTypes
-DatabaseField --> DatabaseTable
 DatabaseField --> "*" FieldTag
-DatabaseField ..> DataTypeTag
-DatabaseField ..> "*" Control
 
 class DatabaseTable{
     id: str
@@ -74,9 +70,7 @@ class DatabaseTable{
     getFields(): list[DatabaseField]
     run(controls: list[Control]): None
 }
-DatabaseTable --> DatabaseSchema
 DatabaseTable --> "*" DatabaseField
-DatabaseTable ..> "*" Control
 
 class DatabaseSchema{
     id: int
@@ -90,9 +84,7 @@ class DatabaseSchema{
     getOrAddTable(name: str): DatabaseTable
     run(controls: list[Control]): None
 }
-DatabaseSchema --> DatabaseMetadataAdapter
 DatabaseSchema --> "*" DatabaseTable
-DatabaseSchema ..> "*" Control
 
 class ScanResult{
     id: int
@@ -105,8 +97,6 @@ class ScanResult{
     run(controls: list[Control]): None
 }
 ScanResult --> "*" DatabaseSchema
-ScanResult --> DatabaseMetadataAdapter
-ScanResult ..> "*" Control
 
 class DataTypeTag{
     id: id
@@ -124,7 +114,6 @@ class ControlAffectedTag{
 
     __init__(control: Control, tag: DataTypeTag, affectedScoreBy: int): ControlTag
 }
-ControlAffectedTag --> Control
 ControlAffectedTag --> DataTypeTag
 
 abstract class Control{
@@ -139,7 +128,6 @@ abstract class Control{
     executeOn(field: DatabaseField): None
 }
 Control --> "*" ControlAffectedTag
-Control ..> DatabaseField
 
 class RegExOnFieldNameControl extends Control{
     __init__(name: str, affectedTags: dict[DataTypeTag, int], regex :str): RegExOnFieldNameControl

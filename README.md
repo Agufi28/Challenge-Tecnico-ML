@@ -41,8 +41,15 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 - DATABASE_ENCRYPTION_KEY: Debe ser un string de 32 bytes encodeado utilizando el formato UrlSafe-Base64
 
 ### Diagrama de clases UML
+
+#### Versión simplificada
+> Nota: Debido a la candidad de relaciones de uso existentes entre los objetos y con la intención de facilitar la comprensión de la idea detrás del modelo, decidí generar una versión simplificada del modelo de objetos contemplando sólo las relaciones de pertenencia y composición más importantes. 
+
+![Diagrama de clases UML - Simplificado](/documentation/Diagrama%20de%20clases%20UML%20-%20Simplificado.svg)
+
+#### Versión completa
 ![Diagrama de clases UML](/documentation/Diagrama%20de%20clases%20UML.svg)
-> Nota: El diagrama de clases sólo incluye las clases que son relevantes para la comprensión del diseño. Las clases auxiliares para la persistencia como la clase `Base` y los atributos cuyo único fin es la persistencia fueron excluidos del diagrama con la intención de reducir el ruido y facilitar el entendimiento de los aspectos más importantes. 
+> Nota: El diagrama de clases sólo incluye las clases que son relevantes para la comprensión del diseño. Las clases auxiliares para la persistencia como la clase `Base` y los atributos cuyo único fin es la persistencia fueron excluidos del diagrama con la intención de reducir el ruido y facilitar el entendimiento de los aspectos más importantes. También fueron excluidos del diagrama de clases los modelos de Pydantic utilizados para formatear la información devuelta al cliente HTTP.
 
 ### Diagrama entidad relación (DER)
 ![DER](/documentation/DER.png)
