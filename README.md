@@ -19,6 +19,23 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 
 ## Documentación
 
+### Endpoints
+
+> Nota: Los endpoints de encuentran documentados en mayor profundidad a través de SwaggerUI. Pueden encontrar dicha documentación dentro de la aplicación en la ruta `/docs`
+
+|Verbo|Ruta|Descripción|Require autenticación|Requiere rol administrador|
+|-|-|-|-|-|
+|GET|`/api/v1/tags`|Retorna id, nombre y descripción de todos los DataType tags disponibles|:white_check_mark:|:white_check_mark:|
+|POST|`/api/v1/tags`|Crea un nuevo DataType tag y retorna su id|:white_check_mark:|:white_check_mark:|
+|GET|`/api/v1/controls`|Retorna id, nombre, tipo y raw_data de todos los controles disponibles|:white_check_mark:|:white_check_mark:|
+|POST|`/api/v1/controls/regexOnFieldName`|Crea un nuevo control de tipo `RegexOnFieldNameControl`y retorna su id|:white_check_mark:|:white_check_mark:|
+|GET|`/api/v1/databases`|Retorna id y nombre de todas las bases de datos disponibles para escanear|:white_check_mark:|:x:|
+|POST|`/api/v1/databases/mysql`|Agrega una nueva base de datos de tipo MySQL a las disponibles para escanear|:white_check_mark:|:x:|
+|POST|`/api/v1/databases/{id}/scans`|Escanea la base de datos con el id indicado. Devuelve el id del escaneo|:white_check_mark:|:x:|
+|GET|`/api/v1/databases/{id}/scans`|Obtiene el listado de resultados de escaneo disponibles para la base de datos con el id indicado. No devuelve los resultados, sólo sus id y fecha de escaneo|:white_check_mark:|:x:|
+|GET|`/api/v1/databases/{id}/scans/last`|Obtiene los resultados del último escaneo de la base de datos con el id indicado|:white_check_mark:|:x:|
+|GET|`/api/v1/databases/scans/{id}`|Obtiene los resultados del escaneo con el id indicado|:white_check_mark:|:x:|
+
 ### Variables de entorno requeridas
 
 - DATABASE_ENCRYPTION_KEY: Debe ser un string de 32 bytes encodeado utilizando el formato UrlSafe-Base64

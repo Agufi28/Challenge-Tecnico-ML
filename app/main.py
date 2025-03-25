@@ -37,9 +37,21 @@ def get_session():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-app = FastAPI()
+app = FastAPI(
+    title="Database clasification API",
+    summary="This API was developed as part of the technical for the Cybersecurity Engineer position",
+    contact={
+        "name": "My github profile",
+        "url": "https://github.com/Agufi28"
+    }
+)
 
-@app.get("/api/v1/tags", response_model=list[DataTypeTagResponse])
+@app.get(
+    "/api/v1/tags", 
+    summary="Retrieve all the available DataType tags", 
+    response_model=list[DataTypeTagResponse], 
+    tags=["Admin endpoints"]
+)
 async def getDataTypeTags(session: SessionDep):
     tags = session.scalars(
         select(DataTypeTag)
@@ -47,7 +59,12 @@ async def getDataTypeTags(session: SessionDep):
 
     return tags
 
-@app.post("/api/v1/tags", response_model=DataTypeTagResponse)
+@app.post(
+    "/api/v1/tags", 
+    summary="Create a new DataType tag",
+    response_model=DataTypeTagResponse, 
+    tags=["Admin endpoints"]
+)
 async def addDataTypeTag(data: DataTypeTagCreationData, session: SessionDep):
     newTag = DataTypeTag(name=data.name, description=data.description)
     session.add(newTag)
@@ -57,7 +74,12 @@ async def addDataTypeTag(data: DataTypeTagCreationData, session: SessionDep):
     return newTag
 
 
-@app.get("/api/v1/controls", response_model=list[ControlsResponse])
+@app.get(
+    "/api/v1/controls", 
+    summary="Get all the available controls",
+    response_model=list[ControlsResponse], 
+    tags=["Admin endpoints"]
+)
 async def getControls(session: SessionDep):
     controls = session.scalars(
         select(Control)
@@ -65,7 +87,12 @@ async def getControls(session: SessionDep):
 
     return controls
 
-@app.post("/api/v1/controls/regexOnFieldName", response_model=ControlsResponse)
+@app.post(
+    "/api/v1/controls/regexOnFieldName", 
+    summary="Create a new control",
+    response_model=ControlsResponse, 
+    tags=["Admin endpoints"]
+)
 async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, session: SessionDep):
     mappedTags = None
     try:
@@ -84,7 +111,13 @@ async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, 
 
     return newControl
 
-@app.get("/api/v1/databases", response_model=list[DatabaseMetadataAdapterResponse])
+
+@app.get(
+    "/api/v1/databases", 
+    summary="Get all the available databases",
+    response_model=list[DatabaseMetadataAdapterResponse], 
+    tags=["Non-Admin endpoints"]
+)
 async def getDatabases(session: SessionDep):
     databases = session.scalars(
         select(DatabaseMetadataAdapter)
@@ -92,7 +125,13 @@ async def getDatabases(session: SessionDep):
 
     return databases
 
-@app.post("/api/v1/databases/mysql", response_model=DatabaseMetadataAdapterResponse)
+
+@app.post(
+    "/api/v1/databases/mysql", 
+    summary="Add a new MySQL type database to be available for scanning",
+    response_model=DatabaseMetadataAdapterResponse, 
+    tags=["Non-Admin endpoints"]
+)
 async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, session: SessionDep) -> DatabaseMetadataAdapterResponse:
     newDatabase = MySQLDatabaseMetadataAdapter(
         host=data.host, 
@@ -105,7 +144,13 @@ async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, se
     session.refresh(newDatabase)
     return newDatabase
 
-@app.post("/api/v1/databases/{id}/scan", response_model=ScanDatabaseResponse)
+
+@app.post(
+    "/api/v1/databases/{id}/scan",
+    summary="Trigger the scan process for the database with  id = {id}",
+    response_model=ScanDatabaseResponse,
+    tags=["Non-Admin endpoints"]
+)
 async def scanDatabase(id: int, session: SessionDep):
     database = session.scalars(
         select(DatabaseMetadataAdapter)
@@ -127,7 +172,12 @@ async def scanDatabase(id: int, session: SessionDep):
 
     return scan
 
-@app.get("/api/v1/databases/{id}/scans")
+
+@app.get(
+    "/api/v1/databases/{id}/scans",
+    summary="Get the past scans of the database with id = {id}",
+    tags=["Non-Admin endpoints"]
+)
 async def getDatabaseResults(id: int, session: SessionDep):
     database = session.execute(
         select(ScanResult.id, ScanResult.executed_on)
@@ -136,7 +186,12 @@ async def getDatabaseResults(id: int, session: SessionDep):
 
     return database
 
-@app.get("/api/v1/databases/{id}/scans/last")
+
+@app.get(
+    "/api/v1/databases/{id}/scans/last",
+    summary="Get the results of the last scan on the database with id = {id}",
+    tags=["Non-Admin endpoints"]
+)
 async def getDatabaseResults(id: int, session: SessionDep):
     database = session.scalars(
         select(ScanResult)
@@ -152,7 +207,12 @@ async def getDatabaseResults(id: int, session: SessionDep):
 
     return database
 
-@app.get("/api/v1/databases/scans/{id}")
+
+@app.get(
+    "/api/v1/databases/scans/{id}",
+    summary="Get the database scan result with id = {id}. Note the id is the scan's, not the database's",
+    tags=["Non-Admin endpoints"]
+)
 async def getDatabaseResults(id: int, session: SessionDep):
     database = session.scalars(
         select(DatabaseSchema)
