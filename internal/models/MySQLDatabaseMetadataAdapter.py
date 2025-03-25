@@ -6,6 +6,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
+from internal.models.ScanResult import ScanResult
 from internal.models.crypto.EncryptedString import EncryptedString
 from internal.models.crypto.EncryptedInt import EncryptedInt
 from internal.models.DatabaseMetadataAdapter import DatabaseMetadataAdapter
@@ -16,7 +17,7 @@ from internal.models.FieldDataTypes import FieldDataTypes
 
 from internal.secrets.Secrets import Secrets
 
-from internal.models.UnsupportedDataTypeException import UnsupportedDataTypeException
+from internal.errors.UnsupportedDataTypeException import UnsupportedDataTypeException
 
 class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
     __tablename__ = "mysql_databases"
@@ -69,7 +70,11 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
         self.username = username
         self.password = password
 
-    def updateStructure(self):
+    def scanStructure(self, dataSampleSize=0):
+        # Creates the new scanResult object and links it to self
+        self.scans.append(ScanResult(self))
+        currentScan = self.getLastScan()
+
         with pymysql.connect(
             host=self.host,
             port=self.port,
@@ -97,10 +102,10 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
                 while data is not None:
                     # This loop actually contains three nested control breaks, thus only the fist one is evident. 
                     # The other two are contained within the used class methods.
-                    if len(self.schemas) == 0 or self.schemas[-1].getName() != data["TABLE_SCHEMA"]:
-                        self.schemas.append(DatabaseSchema(data["TABLE_SCHEMA"]))
+                    if len(currentScan.schemas) == 0 or currentScan.schemas[-1].getName() != data["TABLE_SCHEMA"]:
+                        currentScan.schemas.append(DatabaseSchema(data["TABLE_SCHEMA"]))
 
-                    currentSchema = self.schemas[-1]
+                    currentSchema = currentScan.schemas[-1]
 
                     try:
                         currentSchema.getOrAddTable(data["TABLE_NAME"]).addField(
@@ -115,3 +120,11 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
                         # Encapsulation of the error into a higher level exception for a more clean error handeling
                         raise UnsupportedDataTypeException(f"The data type [{data["DATA_TYPE"]}] of the field [{data["TABLE_SCHEMA"]}.{data["TABLE_NAME"]}.{data["COLUMN_NAME"]}] is not supported by the adapter")
                     data = cursor.fetchone()
+        
+            if dataSampleSize != 0:
+                self.fetchSamples(
+                    dataSampleSize=dataSampleSize, 
+                    structure=currentScan.schemas, 
+                    cursor=cursor
+                )
+        return currentScan

@@ -14,9 +14,9 @@ class DatabaseSchema(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(64), nullable=False)
+    scan_id: Mapped[int] = mapped_column(ForeignKey("scan_result.id"))
     tables: Mapped[list[DatabaseTable]] = relationship(cascade="all, delete-orphan")
 
-    database_id: Mapped[int] = mapped_column(ForeignKey("databases.id"))
 
     def __init__(self, name, tables=None):
         self.name = name

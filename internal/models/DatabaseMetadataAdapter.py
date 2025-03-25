@@ -1,9 +1,13 @@
-from sqlalchemy import String
+from typing import Optional
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
+from internal.errors.ScanException import ScanException
 from internal.models.Base import Base
+from internal.models.Control import Control
+from internal.models.ScanResult import ScanResult
 from internal.models.DatabaseSchema import DatabaseSchema
 
 class DatabaseMetadataAdapter(Base):
@@ -16,7 +20,8 @@ class DatabaseMetadataAdapter(Base):
         "polymorphic_on": "type",
     }
 
-    schemas: Mapped[list[DatabaseSchema]] = relationship(cascade="all, delete-orphan")
+    scans: Mapped[list[ScanResult]] = relationship(cascade="all, delete-orphan", back_populates='database')
+
 
     """
         Must be implemented! 
@@ -29,15 +34,19 @@ class DatabaseMetadataAdapter(Base):
 
         :param dataSampleSize: Set to any n positive integer in order to get a random sample of up to n values of the column. Note: If the column contains less than n values, all the values will be fetched.
     """
+    def scanStructure(self, dataSampleSize=0) -> ScanResult:
+        raise Exception("Must be implemented!")
+
+    def fetchSamples(self,  dataSampleSize, structure:list[DatabaseSchema], cursor):
+        raise Exception("Must be implemented!")
+
+    def getLastScan(self):
+        if len(self.scans) == 0:
+            raise ScanException("The database has not been scanned yet")
+        return self.scans[-1]
     
-    def updateStructure(self) -> None:
-        raise Exception("Must be implemented!")
-
-    def fetchSamples(self, dataSampleSize=0):
-        raise Exception("Must be implemented!")
-
-    def getStructure(self,  dataSampleSize=0)-> list[DatabaseSchema]:
-        self.updateStructure()
-        if dataSampleSize != 0:
-            self.fetchSamples()
-        return self.schemas
+    """
+        Runs the received controls on the last scanned structure of the database.
+    """
+    def runControlsOnLastScan(self, controls: list[Control]):
+        self.getLastScan().run(controls)

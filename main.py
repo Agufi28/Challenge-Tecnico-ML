@@ -14,6 +14,7 @@ from api.models.DatabaseMetadataAdapterResponse import DatabaseMetadataAdapterRe
 from api.models.MySQLDatabaseMetadataAdapterCreationData import MySQLDatabaseMetadataAdapterCreationData
 
 from api.models.RegExOnFieldNameControlCreationData import RegExOnFieldNameControlCreationData
+from api.models.ScanDatabaseResponse import ScanDatabaseResponse
 from internal.models.Control import Control
 from internal.models.DataTypeTag import DataTypeTag
 from internal.models.DatabaseField import DatabaseField
@@ -23,6 +24,7 @@ from internal.models.DatabaseTable import DatabaseTable
 from internal.models.FieldTag import FieldTag
 from internal.models.MySQLDatabaseMetadataAdapter import MySQLDatabaseMetadataAdapter
 from internal.models.RegExOnFieldNameControl import RegExOnFieldNameControl
+from internal.models.ScanResult import ScanResult
 from internal.secrets.Secrets import Secrets
 
 engine = create_engine(
@@ -103,7 +105,7 @@ async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, se
     session.refresh(newDatabase)
     return newDatabase
 
-@app.post("/api/v1/databases/{id}/scan")
+@app.post("/api/v1/databases/{id}/scan", response_model=ScanDatabaseResponse)
 async def scanDatabase(id: int, session: SessionDep):
     database = session.scalars(
         select(DatabaseMetadataAdapter)
@@ -117,21 +119,46 @@ async def scanDatabase(id: int, session: SessionDep):
         select(Control)
     ).all()
     
-    structure = database.getStructure()
-    for schema in structure:
-        schema.run(controls)
-    
+    scan = database.scanStructure()
+    database.runControlsOnLastScan(controls)
+
     session.add(database)
     session.commit()
 
-@app.get("/api/v1/databases/{id}/scan")
+    return scan
+
+@app.get("/api/v1/databases/{id}/scans")
+async def getDatabaseResults(id: int, session: SessionDep):
+    database = session.execute(
+        select(ScanResult.id, ScanResult.executed_on)
+        .where(ScanResult.database_id == id)
+    ).mappings().all()
+
+    return database
+
+@app.get("/api/v1/databases/{id}/scans/last")
 async def getDatabaseResults(id: int, session: SessionDep):
     database = session.scalars(
-        select(DatabaseMetadataAdapter)
-        .where(DatabaseMetadataAdapter.id == id)
+        select(ScanResult)
+        .where(ScanResult.database_id == id)
         .options(
-            joinedload(DatabaseMetadataAdapter.schemas)
+            joinedload(ScanResult.schemas)
             .subqueryload(DatabaseSchema.tables)
+            .subqueryload(DatabaseTable.fields)
+            .subqueryload(DatabaseField.tags)
+            .subqueryload(FieldTag.tag)
+        )
+    ).first()
+
+    return database
+
+@app.get("/api/v1/databases/scans/{id}")
+async def getDatabaseResults(id: int, session: SessionDep):
+    database = session.scalars(
+        select(DatabaseSchema)
+        .where(DatabaseSchema.scan_id == id)
+        .options(
+            joinedload(DatabaseSchema.tables)
             .subqueryload(DatabaseTable.fields)
             .subqueryload(DatabaseField.tags)
             .subqueryload(FieldTag.tag)

@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from internal.secrets.SecretsException import SecretsException
+from internal.errors.SecretsException import SecretsException
 from loguru import logger
 
 load_dotenv()
