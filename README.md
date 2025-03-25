@@ -36,9 +36,13 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 |GET|`/api/v1/databases/{id}/scans/last`|Obtiene los resultados del último escaneo de la base de datos con el id indicado|:white_check_mark:|:x:|
 |GET|`/api/v1/databases/scans/{id}`|Obtiene los resultados del escaneo con el id indicado|:white_check_mark:|:x:|
 
-### Variables de entorno requeridas
-
-- DATABASE_ENCRYPTION_KEY: Debe ser un string de 32 bytes encodeado utilizando el formato UrlSafe-Base64
+### Variables de entorno
+- `DATABASE_ENCRYPTION_KEY`: Debe ser generada utilizando un string aleatorio de 32 bytes encodeado con `URL-Safe Base64`
+- `DATABASE_USER`: Nombre de usuario para la conexión con la base de datos que guardará la información del sistema
+- `DATABASE_PASSWORD`: Clave para el usuario especificado en `DATABASE_USER`
+- `DATABASE_HOST`: IP o [FQDN](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) de la base de datos que gruardará la información del sistema 
+- `DATABASE_PORT`: Puerto de la base de datos que guardará la información del sistema
+- `DATABASE_NAME`: Nombre de la base de datos que guardará la información del sistema
 
 ### Diagrama de clases UML
 
@@ -53,11 +57,3 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 
 ### Diagrama entidad relación (DER)
 ![DER](/documentation/DER.png)
-
-### Variables de entorno
-- `DATABASE_ENCRYPTION_KEY`: Debe ser generada utilizando un string aleatorio de 32 bytes encodeado con `URL-Safe Base64`
-- `DATABASE_USER`: Nombre de usuario para la conexión con la base de datos que guardará la información del sistema
-- `DATABASE_PASSWORD`: Clave para el usuario especificado en `DATABASE_USER`
-- `DATABASE_HOST`: IP o [FQDN](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) de la base de datos que gruardará la información del sistema 
-- `DATABASE_PORT`: Puerto de la base de datos que guardará la información del sistema
-- `DATABASE_NAME`: Nombre de la base de datos que guardará la información del sistema
