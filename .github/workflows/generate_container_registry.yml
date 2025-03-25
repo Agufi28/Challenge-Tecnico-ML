@@ -1,0 +1,25 @@
+name: Generar y subir DockerContainerRegistry
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v3
+
+      - name: 'Login to GHCR'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Generate and upload the Docker image
+        run: |
+          docker build . --tag ghcr.io/Agufi28/Challenge-Tecnico-ML:${{ github.ref_name }}
+          docker push ghcr.io/Agufi28/Challenge-Tecnico-ML:${{ github.ref_name }}
