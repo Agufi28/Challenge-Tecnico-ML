@@ -2,8 +2,11 @@
 
 Este repositorio contiene mi resolución al desafío técnico que me fue propuesto para el puesto de `Cybersecurity Engineer`
 
-Por el momento, ninguna de las dos versiones se encuentra con la madurez necesaria para considerarse versiones alpha, mucho menos beta. Sin embargo, pueden consultar el estado del desarrollo en sus respectivas ramas:
+Como la intención original fue desarrollar dos versiones, una en go y otra en python, el código no se encuentra en main sino en las correspondientes ramas. 
 
-|Version|Rama|
-|-|-|
-|Desarrollada en Python|[VersionEnPython](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/VersionEnPython)|
+:blue_book: Adicionalmente, cada rama contendrá la documentación asociada a las respectivas implementaciones.
+
+|Version|Rama|Estado|
+|-|-|-|
+|Desarrollada en Python|[VersionEnPython](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/VersionEnPython)|Beta|
+|Desarrollada en Go|TBD|Aún no fue desarrollada. Decidí priorizar la creación de nuevas funcionalidades antes que el desarrollo de la segunda API|
