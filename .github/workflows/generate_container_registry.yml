@@ -21,5 +21,5 @@ jobs:
 
       - name: Generate and upload the Docker image
         run: |
-          docker build . --tag ghcr.io/Agufi28/Challenge-Tecnico-ML:${{ github.ref_name }}
-          docker push ghcr.io/Agufi28/Challenge-Tecnico-ML:${{ github.ref_name }}
+          docker build . --tag ghcr.io/Agufi28/challenge-tecnico-ml:${{ github.ref_name }}
+          docker push ghcr.io/Agufi28/challenge-tecnico-ml:${{ github.ref_name }}
