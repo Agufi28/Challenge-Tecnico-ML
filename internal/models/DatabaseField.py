@@ -40,12 +40,13 @@ class DatabaseField(Base):
             If not found, it adds it and returns the added object
         """
         fieldTagsWithTheDesiredDataTypeTag = list(
-            filter(lambda fieldTag: fieldTag.tag_id == tag.id, self.tags)
+            filter(lambda fieldTag: fieldTag.tag.id == tag.id, self.tags)
         )
 
         if len(fieldTagsWithTheDesiredDataTypeTag) == 0:
+            # Creates a new FieldTag and links it to self thus it is not necessary to call self.tags.append(newFieldTag)
             newFieldTag = FieldTag(self, tag, 0)
-            self.tags.append(newFieldTag)
+
             return newFieldTag
         else:
             return fieldTagsWithTheDesiredDataTypeTag[0]
@@ -54,9 +55,6 @@ class DatabaseField(Base):
         fieldTag = self.getOrAddTag(tag)
         fieldTag.certanty_score += score
 
-    def removeUnfoundTags(self):
-        #TODO: Implement
-        pass
 
     def run(self, controls: list['Control']):
         for control in controls:
