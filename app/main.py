@@ -146,7 +146,7 @@ async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, se
 
 
 @app.post(
-    "/api/v1/databases/{id}/scan",
+    "/api/v1/databases/{id}/scans",
     summary="Trigger the scan process for the database with  id = {id}",
     response_model=ScanDatabaseResponse,
     tags=["Non-Admin endpoints"]
