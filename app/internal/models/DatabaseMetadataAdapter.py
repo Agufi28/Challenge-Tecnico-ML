@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped
@@ -9,18 +10,24 @@ from internal.models.Base import Base
 from internal.models.Control import Control
 from internal.models.ScanResult import ScanResult
 from internal.models.DatabaseSchema import DatabaseSchema
+from internal.models.User import User
 
 class DatabaseMetadataAdapter(Base):
     __tablename__ = "databases"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     type: Mapped[str] = mapped_column(String(10))
-
+    created_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
+    createdBy: Mapped[Optional[User]] = relationship()
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now())
+    scans: Mapped[list[ScanResult]] = relationship(cascade="all, delete-orphan", back_populates='database')
+    
     __mapper_args__ = {
         "polymorphic_on": "type",
     }
 
-    scans: Mapped[list[ScanResult]] = relationship(cascade="all, delete-orphan", back_populates='database')
+    def __init__(self, createdBy: User=None):
+        self.createdBy=createdBy
 
 
     """
@@ -34,7 +41,7 @@ class DatabaseMetadataAdapter(Base):
 
         :param dataSampleSize: Set to any n positive integer in order to get a random sample of up to n values of the column. Note: If the column contains less than n values, all the values will be fetched.
     """
-    def scanStructure(self, dataSampleSize=0) -> ScanResult:
+    def scanStructure(self, requestedBy: User=None, dataSampleSize=0) -> ScanResult:
         raise Exception("Must be implemented!")
 
     def fetchSamples(self,  dataSampleSize, structure:list[DatabaseSchema], cursor):

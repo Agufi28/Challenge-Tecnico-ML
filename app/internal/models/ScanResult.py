@@ -24,8 +24,9 @@ class ScanResult(Base):
     requested_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), nullable=True)
     requestedBy: Mapped[Optional[User]] = relationship()
 
-    def __init__(self, database: 'DatabaseMetadataAdapter'): # type: ignore
+    def __init__(self, database: 'DatabaseMetadataAdapter', requestedBy: User=None): # type: ignore
         self.database = database
+        self.requestedBy = requestedBy
 
     def run(self, controls:list[Control]):
         for schema in self.schemas:

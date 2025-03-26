@@ -127,7 +127,7 @@ async def getDataTypeTags(session: DBSessionDep, adminUser: AuthenticatedAdminDe
     tags=["Admin endpoints"]
 )
 async def addDataTypeTag(data: DataTypeTagCreationData, session: DBSessionDep, adminUser: AuthenticatedAdminDep):
-    newTag = DataTypeTag(name=data.name, description=data.description)
+    newTag = DataTypeTag(name=data.name, description=data.description, createdBy=adminUser)
     session.add(newTag)
     session.commit()
     session.refresh(newTag)
@@ -166,7 +166,8 @@ async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, 
     newControl = RegExOnFieldNameControl(
         name=data.name,
         affectedTags=mappedTags,
-        regex=data.regex
+        regex=data.regex,
+        createdBy=adminUser
     )
     session.add(newControl)
     session.commit()
@@ -202,7 +203,8 @@ async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, se
         host=data.host, 
         port=data.port,
         username=data.username,
-        password=data.password
+        password=data.password,
+        createdBy=user
     )
     session.add(newDatabase)
     session.commit()
@@ -231,7 +233,7 @@ async def scanDatabase(id: int, session: DBSessionDep, user: AuthenticatedUserDe
         select(Control)
     ).all()
     
-    scan = database.scanStructure()
+    scan = database.scanStructure(requestedBy=user)
     database.runControlsOnLastScan(controls)
 
     session.add(database)

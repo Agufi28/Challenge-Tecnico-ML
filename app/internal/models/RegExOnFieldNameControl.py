@@ -3,6 +3,7 @@ import re
 
 from internal.models.Control import Control
 from internal.models.DataTypeTag import DataTypeTag
+from internal.models.User import User
 
 class RegExOnFieldNameControl(Control):
     __mapper_args__ = {
@@ -16,8 +17,8 @@ class RegExOnFieldNameControl(Control):
         :param affectedTags: dictionary of the taggs that should be added to the field with their corresponding certanty score. If the tag LAST_NAME should get a 10 points boost when the control match; the dictionary should contain an entry with the tag as key and 10 as value
         :param regex: Regular expression used 
     """
-    def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], regex :str):
-        super().__init__(name, affectedTags)
+    def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], regex :str, createdBy: User = None):
+        super().__init__(name, affectedTags, createdBy)
         self.raw_data = json.dumps({'regex': regex})
 
     # This is the implementation of the get data for the regex scenario. No special parsing is needed since the regex is an string and the raw_data is too

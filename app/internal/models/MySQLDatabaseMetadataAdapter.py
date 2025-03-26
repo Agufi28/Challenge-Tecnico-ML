@@ -14,6 +14,7 @@ from internal.models.DatabaseSchema import DatabaseSchema
 from internal.models.DatabaseTable import DatabaseTable
 from internal.models.DatabaseField import DatabaseField
 from internal.models.FieldDataTypes import FieldDataTypes
+from internal.models.User import User
 
 from internal.secrets.Secrets import Secrets
 
@@ -64,15 +65,16 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
         'timestamp': FieldDataTypes.DATETIME,
     }
 
-    def __init__(self, host, port, username, password):
+    def __init__(self, host, port, username, password, createdBy: User):
+        super().__init__(createdBy)
         self.host = host
         self.port = port
         self.username = username
         self.password = password
 
-    def scanStructure(self, dataSampleSize=0):
+    def scanStructure(self, requestedBy: User=None, dataSampleSize=0):
         # Creates the new scanResult object and links it to self
-        self.scans.append(ScanResult(self))
+        self.scans.append(ScanResult(self, requestedBy=requestedBy))
         currentScan = self.getLastScan()
 
         with pymysql.connect(

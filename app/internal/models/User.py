@@ -20,6 +20,8 @@ class User(Base):
     _password_hash: Mapped[str] = mapped_column(String(72), nullable=False)
     is_admin: Mapped[bool] = mapped_column(nullable=False, default=False)
     last_login: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now())
+
 
     def __init__(self, username: str, password: str , isAdmin: bool):
         self.username = username

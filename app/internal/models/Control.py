@@ -1,5 +1,6 @@
-from typing import Any
-from sqlalchemy import String
+from datetime import datetime
+from typing import Any, Optional
+from sqlalchemy import ForeignKey, String
 from sqlalchemy import Text
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -9,6 +10,7 @@ from internal.models.Base import Base
 from internal.models.DatabaseField import DatabaseField
 from internal.models.ControlAffectedTag import ControlAffectedTag
 from internal.models.DataTypeTag import DataTypeTag
+from internal.models.User import User
 
 class Control(Base):
     __tablename__ = "controls"
@@ -16,7 +18,9 @@ class Control(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     type: Mapped[str] = mapped_column(String(255))
     name: Mapped[str] = mapped_column(String(255))
-
+    created_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
+    createdBy: Mapped[Optional[User]] = relationship()
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now())
     # The size of this column is arbitrarly defined. 
     # The idea behind it is to store the required data to perform the control in any stringified format. 
     # Each control type will be responsable for knwoing how to parse it appropietly for reading and storing. 
@@ -35,8 +39,9 @@ class Control(Base):
         :param name: name of the control
         :param affectedTags: dictionary of the taggs that should be added to the field with their corresponding certanty score. If the tag LAST_NAME should get a 10 points boost when the control match; the dictionary should contain an entry with the tag as key and 10 as value
     """
-    def __init__(self, name: str, affectedTags: dict[DataTypeTag, int]):
+    def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], createdBy: User = None):
         self.name = name
+        self.createdBy = createdBy
         for tag, affectedScore in affectedTags.items():
             self.affectedTags.append(ControlAffectedTag(self, tag, affectedScore))
 
