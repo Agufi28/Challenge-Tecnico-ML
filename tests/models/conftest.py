@@ -10,6 +10,7 @@ from internal.models.DatabaseTable import DatabaseTable
 from internal.models.DatabaseSchema import DatabaseSchema
 from internal.models.ScanResult import ScanResult
 from internal.models.MySQLDatabaseMetadataAdapter import MySQLDatabaseMetadataAdapter
+from internal.models.User import User
 
 @pytest.fixture
 def emailDataTypeTag():
@@ -93,3 +94,12 @@ def dbSession():
     yield session
     session.rollback()
     session.close()
+
+@pytest.fixture(name="makeUser")
+def makeUser(session):
+    def _make_user(username="Default User", password="password", isAdmin=False):
+        user = User(username=username, password=password, isAdmin=isAdmin)
+        session.add(user)
+        session.commit()
+        return user
+    return _make_user
