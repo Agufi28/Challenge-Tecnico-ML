@@ -32,6 +32,7 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 |POST|`/api/v1/tags`|Crea un nuevo DataType tag y retorna su id|:white_check_mark:|:white_check_mark:|
 |GET|`/api/v1/controls`|Retorna id, nombre, tipo y raw_data de todos los controles disponibles|:white_check_mark:|:white_check_mark:|
 |POST|`/api/v1/controls/regexOnFieldName`|Crea un nuevo control de tipo `RegexOnFieldNameControl`y retorna su id|:white_check_mark:|:white_check_mark:|
+|POST|`/api/v1/controls/regExOnSampledDataControl`|Crea un nuevo control de tipo `RegExOnSampledDataControl`y retorna su id|:white_check_mark:|:white_check_mark:|
 |GET|`/api/v1/databases`|Retorna id y nombre de todas las bases de datos disponibles para escanear|:white_check_mark:|:x:|
 |POST|`/api/v1/databases/mysql`|Agrega una nueva base de datos de tipo MySQL a las disponibles para escanear|:white_check_mark:|:x:|
 |POST|`/api/v1/databases/{id}/scans`|Escanea la base de datos con el id indicado. Devuelve el id del escaneo|:white_check_mark:|:x:|
