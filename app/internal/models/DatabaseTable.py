@@ -17,7 +17,6 @@ class DatabaseTable(Base):
     fields: Mapped[list[DatabaseField]] = relationship(cascade="all, delete-orphan")
 
 
-
     def __init__(self, name, fields=None):
         self.name = name
 

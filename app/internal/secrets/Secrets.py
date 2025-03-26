@@ -16,6 +16,18 @@ class Secrets():
             raise SecretsException(f"Error fetching the {secretName} secret")
         return data
     
+    def __getEnvIntOrFail(env, secretName):
+        data = os.getenv(env)
+        if data is None:
+            logger.error(f"Missing environment variable [{env}]")
+            raise SecretsException(f"Error fetching the {secretName} secret")
+        try:
+            intData = int(data)
+            return intData
+        except Exception as e:
+            logger.exception(e)
+            raise SecretsException(f"Error fetching the {secretName} secret")
+
     def getDatabaseEncryptionKey():
         return Secrets.__getEnvOrFail("DATABASE_ENCRYPTION_KEY", "databaseEncryptionKey")
 
@@ -33,3 +45,12 @@ class Secrets():
         
     def getDatabaseName():
         return Secrets.__getEnvOrFail("DATABASE_NAME", "databaseName")
+
+    def getJwtSecret():
+        return Secrets.__getEnvOrFail("JWT_SECRET", "jwtSecret")
+
+    def getJwtAlgorithm():
+        return Secrets.__getEnvOrFail("JWT_ALGORITHM", "jwtAlgorithm")
+    
+    def getJwtDurationMinutes():
+        return Secrets.__getEnvIntOrFail("JWT_EXPIRATION_MINUTES", "JwtDurationMinutes")

@@ -1,10 +1,17 @@
-import json
+from datetime import timedelta
+import sys
+from fastapi.security import OAuth2PasswordRequestForm
+from loguru import logger
+
+logger.remove()
+logger.add("logs/DatabaseClasificationAPI_{time}.log",rotation="w6",format="{time:DD/MM/YYYY HH:mm:ss} - {level} - {message}")
+logger.add(sys.stdout, colorize=True, format="<level>{time:DD/MM/YYYY HH:mm:ss} - {level} - {message}</level>")
+
 from typing import Annotated
 
 from fastapi import FastAPI, Depends, HTTPException
 
 from sqlalchemy import select, create_engine
-from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 
 from api.models.ControlsResponse import ControlsResponse
@@ -25,17 +32,12 @@ from internal.models.FieldTag import FieldTag
 from internal.models.MySQLDatabaseMetadataAdapter import MySQLDatabaseMetadataAdapter
 from internal.models.RegExOnFieldNameControl import RegExOnFieldNameControl
 from internal.models.ScanResult import ScanResult
-from internal.secrets.Secrets import Secrets
 
-engine = create_engine(
-    f"mysql+pymysql://{Secrets.getDatabaseUser()}:{Secrets.getDatabasePassword()}@{Secrets.getDatabaseHost()}:{Secrets.getDatabasePort()}/{Secrets.getDatabaseName()}"
-)
+from api.auth.JWTModels import Token
+from api.auth.helperFunctions import createAccessToken, validateUserCredentialsAndGetUser
 
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-SessionDep = Annotated[Session, Depends(get_session)]
+from api.databaseDependencies import DBSessionDep
+from api.auth.authorizationDependencies import AuthenticatedUserDep, AuthenticatedAdminDep
 
 app = FastAPI(
     title="Database clasification API",
@@ -46,13 +48,36 @@ app = FastAPI(
     }
 )
 
+
+
+@app.post(
+    "/token",
+    summary="Start a new API session and get a JWT bearer token",
+    tags=["Session endpoints"]
+)
+async def processLoginAndGetJWT(
+    loginData: Annotated[OAuth2PasswordRequestForm, Depends()],
+    dbSession: DBSessionDep
+) -> Token:
+    user = validateUserCredentialsAndGetUser(dbSession, loginData.username, loginData.password)
+    if not user:
+        raise HTTPException(
+            status_code=400,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    accessToken = createAccessToken(data={"id": user.id})
+
+    return Token(access_token=accessToken, token_type="bearer")
+
+
 @app.get(
     "/api/v1/tags", 
     summary="Retrieve all the available DataType tags", 
     response_model=list[DataTypeTagResponse], 
     tags=["Admin endpoints"]
 )
-async def getDataTypeTags(session: SessionDep):
+async def getDataTypeTags(session: DBSessionDep, adminUser: AuthenticatedAdminDep):
     tags = session.scalars(
         select(DataTypeTag)
     ).all()
@@ -65,7 +90,7 @@ async def getDataTypeTags(session: SessionDep):
     response_model=DataTypeTagResponse, 
     tags=["Admin endpoints"]
 )
-async def addDataTypeTag(data: DataTypeTagCreationData, session: SessionDep):
+async def addDataTypeTag(data: DataTypeTagCreationData, session: DBSessionDep, adminUser: AuthenticatedAdminDep):
     newTag = DataTypeTag(name=data.name, description=data.description)
     session.add(newTag)
     session.commit()
@@ -80,7 +105,7 @@ async def addDataTypeTag(data: DataTypeTagCreationData, session: SessionDep):
     response_model=list[ControlsResponse], 
     tags=["Admin endpoints"]
 )
-async def getControls(session: SessionDep):
+async def getControls(session: DBSessionDep, adminUser: AuthenticatedAdminDep):
     controls = session.scalars(
         select(Control)
     ).all()
@@ -93,7 +118,7 @@ async def getControls(session: SessionDep):
     response_model=ControlsResponse, 
     tags=["Admin endpoints"]
 )
-async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, session: SessionDep):
+async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, session: DBSessionDep, adminUser: AuthenticatedAdminDep):
     mappedTags = None
     try:
         mappedTags = data.parsedAffectedTags(session)
@@ -118,7 +143,7 @@ async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, 
     response_model=list[DatabaseMetadataAdapterResponse], 
     tags=["Non-Admin endpoints"]
 )
-async def getDatabases(session: SessionDep):
+async def getDatabases(session: DBSessionDep, user: AuthenticatedUserDep):
     databases = session.scalars(
         select(DatabaseMetadataAdapter)
     ).all()
@@ -132,7 +157,7 @@ async def getDatabases(session: SessionDep):
     response_model=DatabaseMetadataAdapterResponse, 
     tags=["Non-Admin endpoints"]
 )
-async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, session: SessionDep) -> DatabaseMetadataAdapterResponse:
+async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, session: DBSessionDep, user: AuthenticatedUserDep) -> DatabaseMetadataAdapterResponse:
     newDatabase = MySQLDatabaseMetadataAdapter(
         host=data.host, 
         port=data.port,
@@ -151,7 +176,7 @@ async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, se
     response_model=ScanDatabaseResponse,
     tags=["Non-Admin endpoints"]
 )
-async def scanDatabase(id: int, session: SessionDep):
+async def scanDatabase(id: int, session: DBSessionDep, user: AuthenticatedUserDep):
     database = session.scalars(
         select(DatabaseMetadataAdapter)
         .where(DatabaseMetadataAdapter.id == id)
@@ -178,7 +203,7 @@ async def scanDatabase(id: int, session: SessionDep):
     summary="Get the past scans of the database with id = {id}",
     tags=["Non-Admin endpoints"]
 )
-async def getDatabaseResults(id: int, session: SessionDep):
+async def getDatabaseResults(id: int, session: DBSessionDep, user: AuthenticatedUserDep):
     database = session.execute(
         select(ScanResult.id, ScanResult.executed_on)
         .where(ScanResult.database_id == id)
@@ -192,7 +217,7 @@ async def getDatabaseResults(id: int, session: SessionDep):
     summary="Get the results of the last scan on the database with id = {id}",
     tags=["Non-Admin endpoints"]
 )
-async def getDatabaseResults(id: int, session: SessionDep):
+async def getDatabaseResults(id: int, session: DBSessionDep, user: AuthenticatedUserDep):
     database = session.scalars(
         select(ScanResult)
         .where(ScanResult.database_id == id)
@@ -213,7 +238,7 @@ async def getDatabaseResults(id: int, session: SessionDep):
     summary="Get the database scan result with id = {id}. Note the id is the scan's, not the database's",
     tags=["Non-Admin endpoints"]
 )
-async def getDatabaseResults(id: int, session: SessionDep):
+async def getDatabaseResults(id: int, session: DBSessionDep, user: AuthenticatedUserDep):
     database = session.scalars(
         select(DatabaseSchema)
         .where(DatabaseSchema.scan_id == id)
