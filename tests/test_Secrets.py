@@ -1,7 +1,6 @@
 from unittest.mock import patch
 import pytest
-from internal.errors.SecretsException import SecretsException # type: ignore
-from internal.secrets.Secrets import Secrets # type: ignore
+from internal.secrets.Secrets import Secrets, SecretsException
 
 
 class TestSecrets():
@@ -12,7 +11,7 @@ class TestSecrets():
     
     @patch("os.getenv", return_value=None)
     def test_getDatabaseEncryptionKey_without_env_var(self, getenv):
-        with pytest.raises(SecretsException):
+        with pytest.raises(SecretsException) as exc_info:
             Secrets.getDatabaseEncryptionKey()
 
     @patch("os.getenv", return_value=None)
