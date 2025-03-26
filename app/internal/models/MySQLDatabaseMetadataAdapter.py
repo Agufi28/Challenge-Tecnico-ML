@@ -65,7 +65,7 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
         'timestamp': FieldDataTypes.DATETIME,
     }
 
-    def __init__(self, host, port, username, password, createdBy: User):
+    def __init__(self, host, port, username, password, createdBy: User=None):
         super().__init__(createdBy)
         self.host = host
         self.port = port
