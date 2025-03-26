@@ -118,15 +118,26 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
                             )
                         )
                     except KeyError as e:
-                        #TODO: Agregar el id de la base de datos al mensaje de error.
                         # Encapsulation of the error into a higher level exception for a more clean error handeling
-                        raise UnsupportedDataTypeException(f"The data type [{data["DATA_TYPE"]}] of the field [{data["TABLE_SCHEMA"]}.{data["TABLE_NAME"]}.{data["COLUMN_NAME"]}] is not supported by the adapter")
+                        raise UnsupportedDataTypeException(f"Database[{self.id}]. The data type [{data["DATA_TYPE"]}] of the field [{data["TABLE_SCHEMA"]}.{data["TABLE_NAME"]}.{data["COLUMN_NAME"]}] is not supported by the adapter")
                     data = cursor.fetchone()
-        
-            if dataSampleSize != 0:
-                self.fetchSamples(
-                    dataSampleSize=dataSampleSize, 
-                    structure=currentScan.schemas, 
-                    cursor=cursor
-                )
+
+                if dataSampleSize != 0:
+                    self.fetchSamples(
+                        dataSampleSize=dataSampleSize, 
+                        structure=currentScan.schemas, 
+                        cursor=cursor
+                    )
         return currentScan
+    
+    def fetchSamples(self, dataSampleSize: int, structure: list[DatabaseSchema], cursor):
+        for schema in structure:
+            for table in schema.getTables():
+                for field in table.getFields():
+                    cursor.execute(f"""
+                        SELECT 
+                            `{field.getName()}` as 'dataSample'
+                        FROM {schema.getName()}.{table.getName()}
+                        ORDER BY RAND() LIMIT %s
+                    """, (dataSampleSize,))
+                    field.dataSample = [row["dataSample"] for row in cursor.fetchall()]

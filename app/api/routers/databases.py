@@ -79,7 +79,7 @@ async def scanDatabase(id: int, session: DBSessionDep, user: AuthenticatedUserDe
         select(Control)
     ).all()
     
-    scan = database.scanStructure(requestedBy=user)
+    scan = database.scanStructure(requestedBy=user, dataSampleSize=10)
     database.runControlsOnLastScan(controls)
 
     session.add(database)

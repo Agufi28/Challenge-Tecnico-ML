@@ -44,7 +44,7 @@ class DatabaseMetadataAdapter(Base):
     def scanStructure(self, requestedBy: User=None, dataSampleSize=0) -> ScanResult:
         raise Exception("Must be implemented!")
 
-    def fetchSamples(self,  dataSampleSize, structure:list[DatabaseSchema], cursor):
+    def fetchSamples(self,  dataSampleSize:str, structure:list[DatabaseSchema], cursor):
         raise Exception("Must be implemented!")
 
     def getLastScan(self):
