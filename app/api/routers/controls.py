@@ -2,12 +2,13 @@ from fastapi import APIRouter, HTTPException
 from loguru import logger
 from sqlalchemy import select
 
-from api.models.Controls import ControlsResponse, RegExOnFieldNameControlCreationData
+from api.models.Controls import ControlsResponse, RegExOnFieldNameControlCreationData, RegExOnSampledDataControlCreationData
 from api.auth.authorizationDependencies import AuthenticatedAdminDep
 from api.databaseDependencies import DBSessionDep
 
 from internal.models.Control import Control
 from internal.models.RegExOnFieldNameControl import RegExOnFieldNameControl
+from internal.models.RegExOnSampledDataControl import RegExOnSampledDataControl
 
 
 router = APIRouter(prefix="/api/v1/controls")
@@ -52,3 +53,30 @@ async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, 
 
     logger.info(f"the user [{adminUser.username}] created a new control of type RegExOnFieldName [{newControl.name}]")
     return newControl
+
+@router.post(
+    "/regExOnSampledDataControl", 
+    summary="Create a new control",
+    response_model=ControlsResponse, 
+    tags=["Admin endpoints"]
+)
+async def addControlRegExOnSampledData(data: RegExOnSampledDataControlCreationData, session: DBSessionDep, adminUser: AuthenticatedAdminDep):
+    mappedTags = None
+    try:
+        mappedTags = data.parsedAffectedTags(session)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    newControl = RegExOnSampledDataControl(
+        name=data.name,
+        affectedTags=mappedTags,
+        regex=data.regex,
+        createdBy=adminUser
+    )
+    session.add(newControl)
+    session.commit()
+    session.refresh(newControl)
+
+    logger.info(f"the user [{adminUser.username}] created a new control of type RegExOnSampledData [{newControl.name}]")
+    return newControl
+

@@ -4,17 +4,16 @@ from pydantic import BaseModel, Field
 
 from internal.models.DataTypeTag import DataTypeTag
 
+
 class ControlsResponse(BaseModel):
     id: int = Field()
     name: str = Field()
     type: str = Field()
     raw_data: str = Field()
 
-class RegExOnFieldNameControlCreationData(BaseModel):
+class ControlCreationData(BaseModel):
     name: str = Field()
-    regex: str = Field()
     affectedTags: dict[str, int] = Field()
-
     def parsedAffectedTags(self, db) -> dict[DataTypeTag, int]:
         parsedTags: dict[DataTypeTag, int] = {}
         for tagName, score in self.affectedTags.items():
@@ -28,3 +27,9 @@ class RegExOnFieldNameControlCreationData(BaseModel):
             
             parsedTags[tag] = score
         return parsedTags
+
+class RegExOnFieldNameControlCreationData(ControlCreationData):
+    regex: str = Field()
+
+class RegExOnSampledDataControlCreationData(ControlCreationData):
+    regex: str = Field()
