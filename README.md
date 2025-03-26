@@ -25,6 +25,9 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 
 |Verbo|Ruta|Descripción|Require autenticación|Requiere rol administrador|
 |-|-|-|-|-|
+|POST|`/api/v1/token`|Crea un nuevo JWT. Recibe usuario y clave del usuario, devuelve el token y el tipo.|:x:|:x:|
+|GET|`/api/v1/users`|Retorna id, nombre y un booleano indicando si son administrador para todos los usuarios disponibles|:white_check_mark:|:white_check_mark:|
+|POST|`/api/v1/users`|Crea un nuevo usuario en el sistema y retorna su informaicón. Recibe los campos `username` y `password`. **Importante: Este es el único endpoint de la API cuyo Content-Type no es JSON**. Debido a los requerimientos del estandard de OAuth2, el Content-Type de este endpoint es **application/x-www-form-urlencoded**|:white_check_mark:|:white_check_mark:|
 |GET|`/api/v1/tags`|Retorna id, nombre y descripción de todos los DataType tags disponibles|:white_check_mark:|:white_check_mark:|
 |POST|`/api/v1/tags`|Crea un nuevo DataType tag y retorna su id|:white_check_mark:|:white_check_mark:|
 |GET|`/api/v1/controls`|Retorna id, nombre, tipo y raw_data de todos los controles disponibles|:white_check_mark:|:white_check_mark:|

@@ -14,7 +14,7 @@ from api.auth.helperFunctions import createAccessToken, validateUserCredentialsA
 
 from api.databaseDependencies import DBSessionDep
 
-from api.routers import controls, tags, users
+from api.routers import controls, tags, users, databases
 
 app = FastAPI(
     title="Database clasification API",
@@ -49,3 +49,4 @@ async def processLoginAndGetJWT(
 app.include_router(tags.router)
 app.include_router(controls.router)
 app.include_router(users.router)
+app.include_router(databases.router)

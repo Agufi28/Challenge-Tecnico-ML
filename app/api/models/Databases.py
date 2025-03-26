@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from app.api.models.Users import UserData
+from api.models.Users import UserData
 
 class DatabaseMetadataAdapterResponse(BaseModel):
     id: int = Field()
