@@ -14,14 +14,6 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import select, create_engine
 from sqlalchemy.orm import joinedload
 
-from api.models.ControlsResponse import ControlsResponse
-from api.models.DataTypeTagCreationData import DataTypeTagCreationData
-from api.models.DataTypeTagResponse import DataTypeTagResponse
-from api.models.DatabaseMetadataAdapterResponse import DatabaseMetadataAdapterResponse
-from api.models.MySQLDatabaseMetadataAdapterCreationData import MySQLDatabaseMetadataAdapterCreationData
-
-from api.models.RegExOnFieldNameControlCreationData import RegExOnFieldNameControlCreationData
-from api.models.ScanDatabaseResponse import ScanDatabaseResponse
 from internal.models.Control import Control
 from internal.models.DataTypeTag import DataTypeTag
 from internal.models.DatabaseField import DatabaseField
@@ -32,6 +24,17 @@ from internal.models.FieldTag import FieldTag
 from internal.models.MySQLDatabaseMetadataAdapter import MySQLDatabaseMetadataAdapter
 from internal.models.RegExOnFieldNameControl import RegExOnFieldNameControl
 from internal.models.ScanResult import ScanResult
+from internal.models.User import User
+
+
+from api.models.ControlsResponse import ControlsResponse
+from api.models.DataTypeTagCreationData import DataTypeTagCreationData
+from api.models.DataTypeTagResponse import DataTypeTagResponse
+from api.models.DatabaseMetadataAdapterResponse import DatabaseMetadataAdapterResponse
+from api.models.MySQLDatabaseMetadataAdapterCreationData import MySQLDatabaseMetadataAdapterCreationData
+from api.models.RegExOnFieldNameControlCreationData import RegExOnFieldNameControlCreationData
+from api.models.ScanDatabaseResponse import ScanDatabaseResponse
+from api.models.UserCreation import UserData, UserCreationData
 
 from api.auth.JWTModels import Token
 from api.auth.helperFunctions import createAccessToken, validateUserCredentialsAndGetUser
@@ -61,14 +64,46 @@ async def processLoginAndGetJWT(
 ) -> Token:
     user = validateUserCredentialsAndGetUser(dbSession, loginData.username, loginData.password)
     if not user:
+        logger.warning(f"failed login attempt for user [{loginData.username}]")
         raise HTTPException(
             status_code=400,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     accessToken = createAccessToken(data={"id": user.id})
-
+    logger.info(f"The user [{loginData.username}] successfully logged in")
     return Token(access_token=accessToken, token_type="bearer")
+
+@app.get(
+    "/api/v1/users",
+    summary="Retrieve all the available users",
+    response_model=list[UserData],
+    tags=["Admin endpoints"]
+)
+async def getUsers(dbSession: DBSessionDep, adminUser: AuthenticatedAdminDep):
+    users = dbSession.scalars(
+        select(User)
+    ).all()
+    logger.debug(f"the user {adminUser.username} accessed the admin endpoint [GET /api/v1/users]")
+    return users
+
+@app.post(
+    "/api/v1/users",
+    summary="Create a new user",
+    response_model=UserData,
+    tags=["Admin endpoints"]
+)
+async def createUser(userData: UserCreationData, dbSession: DBSessionDep, adminUser: AuthenticatedAdminDep):
+    user = User(
+        username=userData.username,
+        password=userData.password,
+        isAdmin=userData.is_admin
+    )
+    dbSession.add(user)
+    dbSession.commit()
+    dbSession.refresh(user)
+    logger.info(f"the user [{adminUser.username}] created the user [{user.username}] with admin={user.is_admin}")
+    return user
 
 
 @app.get(
@@ -81,6 +116,7 @@ async def getDataTypeTags(session: DBSessionDep, adminUser: AuthenticatedAdminDe
     tags = session.scalars(
         select(DataTypeTag)
     ).all()
+    logger.debug(f"the user {adminUser.username} accessed the admin endpoint [GET /api/v1/tags]")
 
     return tags
 
@@ -95,6 +131,7 @@ async def addDataTypeTag(data: DataTypeTagCreationData, session: DBSessionDep, a
     session.add(newTag)
     session.commit()
     session.refresh(newTag)
+    logger.info(f"the user [{adminUser.username}] created the new DataTypeTag [{newTag.name}]")
 
     return newTag
 
@@ -109,6 +146,7 @@ async def getControls(session: DBSessionDep, adminUser: AuthenticatedAdminDep):
     controls = session.scalars(
         select(Control)
     ).all()
+    logger.debug(f"the user {adminUser.username} accessed the admin endpoint [GET /api/v1/controls]")
 
     return controls
 
@@ -134,6 +172,7 @@ async def addControlRegExOnFieldName(data: RegExOnFieldNameControlCreationData, 
     session.commit()
     session.refresh(newControl)
 
+    logger.info(f"the user [{adminUser.username}] created a new control of type RegExOnFieldName [{newControl.name}]")
     return newControl
 
 
@@ -148,6 +187,7 @@ async def getDatabases(session: DBSessionDep, user: AuthenticatedUserDep):
         select(DatabaseMetadataAdapter)
     ).all()
 
+    logger.debug(f"the user {user.username} accessed the endpoint [GET /api/v1/databases]")
     return databases
 
 
@@ -167,6 +207,8 @@ async def createMySQLDatabase(data: MySQLDatabaseMetadataAdapterCreationData, se
     session.add(newDatabase)
     session.commit()
     session.refresh(newDatabase)
+
+    logger.info(f"the user [{user.username}] added a new database to the system. dabase id={newDatabase.id}")
     return newDatabase
 
 
@@ -195,6 +237,7 @@ async def scanDatabase(id: int, session: DBSessionDep, user: AuthenticatedUserDe
     session.add(database)
     session.commit()
 
+    logger.info(f"the user [{user.username}] requested a new scan for the database with id={database.id}")
     return scan
 
 
@@ -209,6 +252,7 @@ async def getDatabaseResults(id: int, session: DBSessionDep, user: Authenticated
         .where(ScanResult.database_id == id)
     ).mappings().all()
 
+    logger.debug(f"the user {user.username} accessed the scan history for the database with id={id}")
     return database
 
 
@@ -230,6 +274,7 @@ async def getDatabaseResults(id: int, session: DBSessionDep, user: Authenticated
         )
     ).first()
 
+    logger.debug(f"the user {user.username} accessed the last scan results for the database with id={id}")
     return database
 
 
@@ -250,4 +295,5 @@ async def getDatabaseResults(id: int, session: DBSessionDep, user: Authenticated
         )
     ).first()
 
+    logger.debug(f"the user {user.username} accessed scan results with id={id}")
     return database

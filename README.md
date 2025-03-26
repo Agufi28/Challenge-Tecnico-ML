@@ -43,6 +43,9 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
 - `DATABASE_HOST`: IP o [FQDN](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) de la base de datos que gruardará la información del sistema 
 - `DATABASE_PORT`: Puerto de la base de datos que guardará la información del sistema
 - `DATABASE_NAME`: Nombre de la base de datos que guardará la información del sistema
+- `JWT_SECRET`: String aleatorio para la creación de tokens. Se recomienda una longitud mínima de 64 caracteres aleatorios.
+- `JWT_ALGORITHM`: Algoritmo a utilizar en el JWT. Se recomienda `HS256`
+- `JWT_EXPIRATION_MINUTES`: Duración en minutos del `JWT` una vez emitido
 
 ### Diagrama de clases UML
 
