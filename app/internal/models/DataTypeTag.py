@@ -13,7 +13,7 @@ class DataTypeTag(Base):
     __tablename__ = "datatype_tags"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(32), nullable=False) 
+    name: Mapped[str] = mapped_column(String(32), nullable=False, unique=True) 
     description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_by_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
     createdBy: Mapped[Optional[User]] = relationship()

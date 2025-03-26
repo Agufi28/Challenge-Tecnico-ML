@@ -59,3 +59,6 @@ class DatabaseField(Base):
     def run(self, controls: list['Control']):
         for control in controls:
             control.executeOn(self)
+
+    def getDataSampleWithoutNones(self):
+        return [dataPoint for dataPoint in self.dataSample if dataPoint is not None]

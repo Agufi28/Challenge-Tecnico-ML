@@ -74,7 +74,7 @@ class MySQLDatabaseMetadataAdapter(DatabaseMetadataAdapter):
 
     def scanStructure(self, requestedBy: User=None, dataSampleSize=0):
         # Creates the new scanResult object and links it to self
-        self.scans.append(ScanResult(self, requestedBy=requestedBy))
+        ScanResult(self, requestedBy=requestedBy)
         currentScan = self.getLastScan()
 
         with pymysql.connect(
