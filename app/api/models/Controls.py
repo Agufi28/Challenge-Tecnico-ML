@@ -1,8 +1,14 @@
+from typing import Any
+from sqlalchemy import select
 from pydantic import BaseModel, Field
 
-from sqlalchemy import select
-
 from internal.models.DataTypeTag import DataTypeTag
+
+class ControlsResponse(BaseModel):
+    id: int = Field()
+    name: str = Field()
+    type: str = Field()
+    raw_data: str = Field()
 
 class RegExOnFieldNameControlCreationData(BaseModel):
     name: str = Field()
