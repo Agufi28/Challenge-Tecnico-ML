@@ -3,10 +3,13 @@
 abstract class DatabaseMetadataAdapter{
     id: int
     scans: list[ScanResult]
+    createdBy: Optional[User]
 
+    __init__(createdBy: User=None)
     scanStructure(dataSampleSize=0): ScanResult
     fetchSamples(dataSampleSize: int, structure:list[DatabaseSchema], cursor): None
     def getLastScan(): ScanResult
+    runControlsOnLastScan(controls: list[Control]): None
 }
 DatabaseMetadataAdapter --> "*" ScanResult
 
@@ -17,7 +20,7 @@ class MySQLDatabaseMetadataAdapter extends DatabaseMetadataAdapter{
     password: str
 
     mysqlTypesToStandarTypes: dict[str, FieldDataTypes]
-    __init__(host, port, username, password)
+    __init__(host, port, username, password, createdBy: User=None)
 }
 
 enum FieldDataTypes{
@@ -45,7 +48,6 @@ class DatabaseField{
     id: int
     name: str
     type: FieldDataTypes
-    table: DatabaseTable
     tags: list[FieldTag]
     dataSample: list[Any]
 
@@ -54,6 +56,7 @@ class DatabaseField{
     getOrAddTag(tag: DataTypeTag): FieldTag
     updateTag(tag: DataTypeTag, score: int): None
     run(controls: list[Control]): None
+    getDataSampleWithoutNones(): list[Any]
 }
 
 DatabaseField --> FieldDataTypes
@@ -89,12 +92,13 @@ DatabaseSchema --> "*" DatabaseTable
 class ScanResult{
     id: int
     name: str
-    executeOn: datetime
+    executed_on: datetime
     schemas: list[DatabaseSchema]
     database: DatabaseMetadataAdapter
+    requestedBy: Optional[User]
 
     __init__(database: DatabaseMetadataAdapter): ScanResult
-    run(controls: list[Control]): None
+    run(controls: list[Control], requestedBy: User=None): None
 }
 ScanResult --> "*" DatabaseSchema
 
@@ -102,10 +106,11 @@ class DataTypeTag{
     id: id
     name: str
     description: Optional[str]
+    createdBy: Optional[User]
+    created_at: datetime
 
-    __init__(name: str, description: str=None): DataTypeTag
+    __init__(name: str, description: str=None, createdBy: User=None): DataTypeTag
 }
-
 
 class ControlAffectedTag{
     id: int
@@ -121,8 +126,10 @@ abstract class Control{
     name: str
     raw_data: str
     affectedTags: list[ControlAffectedTag]
+    createdBy: Optional[User]
+    created_at: datetime
 
-    __init__(name: str, affectedTags: dict[DataTypeTag, int])
+    __init__(name: str, affectedTags: dict[DataTypeTag, int], createdBy: User = None)
     __conditionMatches(field: DatabaseField): bool
     getData(): dict[str, Any]
     executeOn(field: DatabaseField): None
@@ -130,8 +137,14 @@ abstract class Control{
 Control --> "*" ControlAffectedTag
 
 class RegExOnFieldNameControl extends Control{
-    __init__(name: str, affectedTags: dict[DataTypeTag, int], regex :str): RegExOnFieldNameControl
+    __init__(name: str, affectedTags: dict[DataTypeTag, int], regex :str, createdBy: User = None): RegExOnFieldNameControl
     getRegEx(): str
 }
+
+class RegExOnSampledDataControl extends Control{
+    __init__(name: str, affectedTags: dict[DataTypeTag, int], regex :str, createdBy: User = None): RegExOnSampledDataControl
+    getRegEx(): str
+}
+
 
 /@enduml
