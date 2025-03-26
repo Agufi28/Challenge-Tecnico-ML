@@ -113,6 +113,7 @@ async def getDatabaseResults(id: int, session: DBSessionDep, user: Authenticated
     database = session.scalars(
         select(ScanResult)
         .where(ScanResult.database_id == id)
+        .order_by(ScanResult.id.desc())
         .options(
             joinedload(ScanResult.schemas)
             .subqueryload(DatabaseSchema.tables)
