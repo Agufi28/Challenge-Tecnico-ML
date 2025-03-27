@@ -8,5 +8,5 @@ Como la intención original fue desarrollar dos versiones, una en go y otra en p
 
 |Version|Rama|Estado|
 |-|-|-|
-|Desarrollada en Python|[VersionEnPython](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/VersionEnPython)|Beta|
+|Desarrollada en Python|[VersionEnPython](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/VersionEnPython)|Release: [v1.0.0-python](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v1.0.0-python)|
 |Desarrollada en Go|TBD|Aún no fue desarrollada. Decidí priorizar la creación de nuevas funcionalidades antes que el desarrollo de la segunda API|
