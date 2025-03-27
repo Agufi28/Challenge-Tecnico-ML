@@ -2,6 +2,40 @@
 
 Este repositorio contiene mi resolución en Python al desafío técnico que me fue propuesto para el puesto de `Cybersecurity Engineer`
 
+## Índice
+
+1. [Deploy](#deploy)
+2. Documentación
+    1. [Releases](#documentación---releases)
+    2. [Consideraciones particulares](#documentación---consideraciones-particulares)
+        1. [Sobre las dependencias](#sobre-las-dependencias)
+        2. [Sobre el modelo de objetos](#sobre-el-modelo-de-objetos)
+            1. [Generales](#generales)
+            2. [Bases de datos](#bases-de-datos)
+            3. [Controles](#controles)
+            4. [Otros posibles tipos de control](#otros-posibles-tipos-de-control)
+            5. 
+        3. [Sobre el mecanismo de detección](#sobre-el-mecanismo-de-detección)
+        4. [Sobre el mapeo Objetos-Relacional](#sobre-el-mapeo-objetos-relacional)
+        5. [Asunciones](#asunciones)
+        6. [Endpoints](#endpoints)
+        7. [Variables de entorno](#variables-de-entorno)
+    3. [Diagramas](#documentación---diagramas)
+        1. [Diagrama de clases UML](#diagrama-de-clases-uml)
+            1. [Versión simplificada](#versión-simplificada)
+            2. [Versión completa](#versión-completa)
+        2. [Diagrama entidad relación (DER)](#diagrama-entidad-relación-der)
+        3. [Diagrama de secuencia al realizar un escaneo](#diagrama-de-secuencia-al-realizar-un-escaneo)
+    4. [FrontEnd](#documentacion---frontend)
+    5. [Deudas técnicas](#deudas-técnicas)
+    6. [Estructura de la base de datos](#estructura-de-la-base-de-datos)
+        1. [Usuarios de prueba](#usuarios-de-prueba)
+        2. [Controles de prueba](#controles-de-prueba)
+        3. [Archivos de generación](#archivos-de-generación)
+
+---
+
+
 ## Deploy
 
 Este repositorio compila automáticamente una imagen de docker ubicada en ghcr.io.
@@ -60,7 +94,7 @@ services:
 - Decidí utilizar una librería de `logging` llamada [Loguru](https://loguru.readthedocs.io/en/stable/) debido a su simpleza y amplio soporte por parte de la comunidad de Python. Provee soporte extensible para diversas estrategias de logueo incluyendo, entre otras, logueo hacia `stdout`, `stderror` y archivos; teniendo incluso para estos últimos mecanismos de rotación ya incorporados.
 
 ### Sobre el modelo de objetos
-#### General
+#### Generales
 - Decidí utilizar [`ABC`](https://docs.python.org/3/library/abc.html)s para representar la idea de una interfaz. Sé que no es necesario por tratarse de un lenguaje "levemente tipado" (tipado dinámico), pero a mi forma de ver, la utilización de dichas clases abstractas no sólo no perjudican de manera significativa la performance sino que aportan un gran nivel de semántica facilitando la comprensión de la idea detrás del código y reduciendo la necesidad de utilizar comentarios y documentación externa.
     > Nota: Si bien en algún momento del desarrollo estuvieron explícitamente definidas como hijas de `ABC`, en la versión actual por conflictos en la herencia múltiple con la clase `DeclarativeBase` de SQLAlchemy, son una clase más llevando sólo la semantica de un ABC.
 - Soy consciente de la existencia de una mezcla en los criterios de nombre para las variables. Fue resultado de haber tomado la decisión de mantener la estructura de la base de datos consistentemente en `snake_case`. Por ello, los atributos de los modelos que representan directamente campos de la base de datos se encuentran en ese formato, mientras que el resto del proyecto está desarrollado en `camelCase`
