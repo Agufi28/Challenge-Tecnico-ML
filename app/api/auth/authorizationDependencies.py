@@ -12,7 +12,7 @@ from api.auth.JWTModels import TokenData
 from api.databaseDependencies import DBSessionDep
 
 
-OAuth2SchemeDep = OAuth2PasswordBearer(tokenUrl="token")
+OAuth2SchemeDep = OAuth2PasswordBearer(tokenUrl="api/v1/token")
 
 async def getCurrentUser(token: Annotated[str, Depends(OAuth2SchemeDep)], dbSession: DBSessionDep):
     credentialsException = HTTPException(

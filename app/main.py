@@ -16,6 +16,9 @@ from api.databaseDependencies import DBSessionDep
 
 from api.routers import controls, tags, users, databases
 
+from frontend.routers import frontend
+from fastapi.staticfiles import StaticFiles
+
 app = FastAPI(
     title="Database clasification API",
     summary="This API was developed as part of the technical for the Cybersecurity Engineer position",
@@ -26,7 +29,7 @@ app = FastAPI(
 )
 
 @app.post(
-    "/token",
+    "/api/v1/token",
     summary="Start a new API session and get a JWT bearer token",
     tags=["Session endpoints"]
 )
@@ -46,6 +49,9 @@ async def processLoginAndGetJWT(
     logger.info(f"The user [{loginData.username}] successfully logged in")
     return Token(access_token=accessToken, token_type="bearer")
 
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+
+app.include_router(frontend.router)
 app.include_router(tags.router)
 app.include_router(controls.router)
 app.include_router(users.router)
