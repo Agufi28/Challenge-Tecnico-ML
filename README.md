@@ -2,6 +2,49 @@
 
 Este repositorio contiene mi resolución en Python al desafío técnico que me fue propuesto para el puesto de `Cybersecurity Engineer`
 
+## Deploy
+
+Este repositorio compila automáticamente una imagen de docker ubicada en ghcr.io.
+
+Ejemplo de Docker compose:
+
+```yml
+version: "2.2"
+
+services:
+  db:
+    container_name: challengeml_db
+    image: mysql:8.0.26
+    command: --sql_mode="NO_ENGINE_SUBSTITUTION" --default-authentication-plugin=mysql_native_password --max-allowed-packet=67108864
+
+    environment:
+      - MYSQL_ROOT_PASSWORD=reallyPleaseChangeMe!
+      - MYSQL_USER=appUser
+      - MYSQL_PASSWORD=changeMe!!
+      - MYSQL_DATABASE=challengeml
+      - TZ=America/Buenos_Aires
+    cap_add:
+      - SYS_NICE
+    restart: unless-stopped
+    ports:
+      - 1000:3306
+
+  app:
+    container_name: challengeml_api_python
+    image: ghcr.io/agufi28/challenge-tecnico-ml:v1.0.0-python
+    environment:
+      - DATABASE_ENCRYPTION_KEY=NjAxMTc5NjA4MzQ3NzMwNjc3NTk1MDY5ODk1NTkzNjk=
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=reallyPleaseChangeMe!
+      - DATABASE_HOST=db
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=challengeml
+    restart: unless-stopped
+    ports:
+      - 1001:80 #You should probably change the out port(1001) to one you like
+```
+
+
 ## Documentación - Consideraciones particulares
 
 ### Sobre las dependencias
