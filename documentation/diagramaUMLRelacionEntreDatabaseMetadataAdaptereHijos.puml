@@ -1,0 +1,26 @@
+@startuml Diagrama de relacion entre DatabaseMetadataAdapter y sus hijos
+
+
+abstract class DatabaseMetadataAdapter{
+    id: int
+    scans: list[ScanResult]
+    createdBy: Optional[User]
+
+    __init__(createdBy: User=None)
+    scanStructure(dataSampleSize=0): ScanResult
+    fetchSamples(dataSampleSize: int, structure:list[DatabaseSchema], cursor): None
+    def getLastScan(): ScanResult
+    runControlsOnLastScan(controls: list[Control]): None
+}
+
+class MySQLDatabaseMetadataAdapter extends DatabaseMetadataAdapter{
+    host: str
+    port: int
+    username: str
+    password: str
+
+    mysqlTypesToStandarTypes: dict[str, FieldDataTypes]
+    __init__(host, port, username, password, createdBy: User=None)
+}
+
+@enduml

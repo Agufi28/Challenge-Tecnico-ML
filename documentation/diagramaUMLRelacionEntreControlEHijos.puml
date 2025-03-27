@@ -1,0 +1,28 @@
+@startuml Diagrama de relacion entre Control y sus hijos
+
+
+abstract class Control{
+    id: int
+    name: str
+    raw_data: str
+    affectedTags: list[ControlAffectedTag]
+    createdBy: Optional[User]
+    created_at: datetime
+
+    __init__(name: str, affectedTags: dict[DataTypeTag, int], createdBy: User = None)
+    __conditionMatches(field: DatabaseField): bool
+    getData(): dict[str, Any]
+    executeOn(field: DatabaseField): Ndone
+}
+
+class RegExOnFieldNameControl extends Control{
+    __init__(name: str, affectedTags: dict[DataTypeTag, int], regex :str, createdBy: User = None): RegExOnFieldNameControl
+    getRegEx(): str
+}
+
+class RegExOnSampledDataControl extends Control{
+    __init__(name: str, affectedTags: dict[DataTypeTag, int], regex :str, createdBy: User = None): RegExOnSampledDataControl
+    getRegEx(): str
+}
+
+@enduml
