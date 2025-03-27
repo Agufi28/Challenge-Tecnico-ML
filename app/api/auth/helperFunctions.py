@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
 from sqlalchemy import select
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 from internal.models.User import User
 from internal.secrets.Secrets import Secrets
