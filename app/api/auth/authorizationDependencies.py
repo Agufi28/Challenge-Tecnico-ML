@@ -17,7 +17,7 @@ OAuth2SchemeDep = OAuth2PasswordBearer(tokenUrl="api/v1/token")
 async def getCurrentUser(token: Annotated[str, Depends(OAuth2SchemeDep)], dbSession: DBSessionDep):
     credentialsException = HTTPException(
         status_code=401,
-        detail="The token is invalid or has expired",
+        detail="The token is invalid or has expired.",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:

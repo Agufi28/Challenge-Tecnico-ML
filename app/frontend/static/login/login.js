@@ -12,14 +12,6 @@ $(function () {
 			success: function (response) {
 				localStorage.setItem('accessToken', response.access_token);
 
-				$.ajaxSetup({
-					headers: {
-						'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
-					}
-				});
-				$(document).ajaxSend(function (event, jqxhr, settings) {
-					jqxhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('accessToken'))
-				});
 				window.location = '/databases'
 			},
 			error: function (response, e, n) {
