@@ -14,7 +14,6 @@ Este repositorio contiene mi resolución en Python al desafío técnico que me f
             2. [Bases de datos](#bases-de-datos)
             3. [Controles](#controles)
             4. [Otros posibles tipos de control](#otros-posibles-tipos-de-control)
-            5. 
         3. [Sobre el mecanismo de detección](#sobre-el-mecanismo-de-detección)
         4. [Sobre el mapeo Objetos-Relacional](#sobre-el-mapeo-objetos-relacional)
         5. [Asunciones](#asunciones)
