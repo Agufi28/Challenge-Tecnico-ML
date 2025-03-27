@@ -27,11 +27,11 @@ services:
       - SYS_NICE
     restart: unless-stopped
     ports:
-      - 1000:3306
+      - 1000:3306 #You should probably change the out port(1000) to one you like
 
   app:
     container_name: challengeml_api_python
-    image: ghcr.io/agufi28/challenge-tecnico-ml:v1.0.0-python
+    image: ghcr.io/agufi28/challenge-tecnico-ml:v2.0.1-python
     environment:
       - DATABASE_ENCRYPTION_KEY=NjAxMTc5NjA4MzQ3NzMwNjc3NTk1MDY5ODk1NTkzNjk=
       - DATABASE_USER=root
@@ -45,7 +45,7 @@ services:
 ```
 ## Documentación - Releases
 
-- [`v1.0.0-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v1.0.0-python): Contiene sólo la API funcionando
+- [`v1.0.0-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene sólo la API funcionando
 - [`v2.0.0-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene tanto la API como la GUI funcionando
 
 ## Documentación - Consideraciones particulares
