@@ -43,7 +43,10 @@ services:
     ports:
       - 1001:80 #You should probably change the out port(1001) to one you like
 ```
+## Documentación - Releases
 
+- [`v1.0.0-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v1.0.0-python): Contiene sólo la API funcionando
+- [`v2.0.0-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene tanto la API como la GUI funcionando
 
 ## Documentación - Consideraciones particulares
 
