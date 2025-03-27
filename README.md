@@ -64,7 +64,7 @@ services:
 
   app:
     container_name: challengeml_api_python
-    image: ghcr.io/agufi28/challenge-tecnico-ml:v2.0.3-python
+    image: ghcr.io/agufi28/challenge-tecnico-ml:v2.0.4-python
     environment:
       - DATABASE_ENCRYPTION_KEY=NjAxMTc5NjA4MzQ3NzMwNjc3NTk1MDY5ODk1NTkzNjk=
       - DATABASE_USER=root
@@ -82,7 +82,7 @@ services:
 ## Documentación - Releases
 
 - [`v1.0.2-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v1.0.2-python): Contiene sólo la API funcionando
-- [`v2.0.3-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.3-python): Contiene tanto la API como la GUI funcionando
+- [`v2.0.4-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.4-python): Contiene tanto la API como la GUI funcionando
 
 ## Documentación - Consideraciones particulares
 
