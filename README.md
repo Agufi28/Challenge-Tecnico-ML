@@ -103,6 +103,17 @@ Para acceder a estas muestras desde un control, se debe utilizar el atributo `da
         # Así podemos obtener los puntos de datos muestreados que no sean nulos
         sampledDataWithoutNulls = field.getDataSampleWithoutNones()
 ```
+
+#### Otros posibles tipos de control
+
+Mientras desarrollaba el sistema, contemple implementar otros tipos de controles que me resultaron interesantes. Sin embargo, los descarté por cuestiones de tiempo. Algunos de los controles que pensé son:
+
+- Verificar los datos muestreados del campo contra un diccionario de nombres típicos de la región donde se ejecuta el sistema
+- Verificar los datos muestreados del campo contra una API externa que me indique si se trata, por ejemplo, de una tarjeta de crédito
+- Verificar los campos de tipo numérico se encuentren en un rango específico, por ejemplo, para identificar números de DNI
+- Verificar los datos muestreados del campo utilizando una aplicación de consola como [`hash-identifier`](https://www.kali.org/tools/hash-identifier/) para detectar algoritmos vulnerables u obsoletos
+
+
 ### Sobre el mecanismo de detección
 
 Debido a que el sistema fue pensado para ejecutar múltiples controles diferentes sobre la estructura de la base de datos y a que éstos pueden no estar de acuerdo en el tipo de dato asociado a los campos escaneados, tomé la decisión de utilizar un sistema de etiquetado con peso. 
@@ -224,3 +235,32 @@ Adicionalmente, con la intención de brindar completitud a la API, decidí agreg
 - Los creadores de [FastAPI sugieren](https://fastapi.tiangolo.com/tutorial/sql-databases) una forma más elegante de retornar los datos pero requiere modelar las entidades con un objeto proxy creado por ellos que se encuentra en una versión beta. Si bien tiene gran parte de la funcionalidad de SQLAlchemy, debido a la complejidad de los mapeos de herencia utilizados y a que no soporta completamente las funcionalidades de SQLAlchemy no fui capaz de adaptar fácilmente la solución al nuevo modelo. No digo que sea imposible sino que tras dedicarle aproximadamente 6hs, considero que los beneficios obtenibles de lograr dicha implementación no compensan el tiempo invertido en hacerlo. En caso de contar con tiempo adicional luego de satisfacer los demás requerimientos, retomaré la tarea de refactorizar el modelo utilizando las clases provistas por [SQLModel](https://sqlmodel.tiangolo.com/)
 - Testeos exhaustivos: Debido a las complejidades inherentes a que la mayoría de las entidades estén atadas a información provista por la base de datos y a que me concentré en desarrollar una API lo más completa y flexible posible y a documentar lo mejor que pude con la intención de hacerles llegar mi idea detrás del modelo desarrollado, no hice a tiempo de testear el proyecto de forma exhaustiva. Soy consciente de que esto no es una buena práctia y es por eso que lo estoy agregando como deuda técnica. Testee lo más que pude, pero sé que fué poco.
 - Loggin exhaustivo: Si bien la aplicación loguea todas las acciones realizadas por los usuarios y muchos de las excepciones intenamente lanzadas, no está todo contemplado. Sería necesario realizar una refactorización del código agregando loggeos de tipo `info`, `debug` y `error` dentro del modelo de objetos según corresponda.
+- Por motivos de trazabilidad y no repudio decidí registrar el usuario que realizó cada operación de creación (POST). Sin embargo, por conflictos con las relaciones recursivas en SQLAlchemy no fui capaz de implementar este control para el caso de `POST /api/v1/users`. Queda pendiente buscar algún mecanismo para solventar la incompatibilidad de SQLAlchemy con este tipo de relaciones.
+- Definir y enforzar una política de contraseñas para los usuarios. Ej. Mínimo 8 caracteres, mayúsculas, minúsculas, símbolos, etc.
+
+## Estructura de la base de datos
+
+Como parte del script que genera la estructura de la base de datos para utilizar la aplicación decidí incluir registros de prueba para que la base de datos sea inicializada con información básica
+
+### Usuarios de prueba
+
+|Id|Usuario|Clave|Admin|
+|-|-|-|-|
+|1|`testAdmin`|`adminPassword`|:white_check_mark:|
+|2|`testUser`|`userPassword`|:x:|
+
+### Controles de prueba
+|Id|Name|Type|Regex|
+|-|-|-|-|
+|1|Check for the literal string username|RegExOnFieldName|`username\|USERNAME`|
+|2|Search for the string user|RegExOnFieldName|`.*(user\|USER).*`|
+|3|Search for the string name|RegExOnFieldName|`.*(name\|NAME).*`|
+|4|Search for common ways of reffering to the last_name|RegExOnFieldName|`(last\|LAST\|SUR\|sur)(_\|-)?(name\|NAME)`|
+|5|Search for common ways of reffering to the first_name|RegExOnFieldName|`(first\|FIRST)(_\|-)?(name\|NAME)`|
+|6|Search for various ways of naming an email field|RegExOnFieldName|`(first\|FIRST)(_\|-)?(name\|NAME)`|
+|7|Search for various any pattern containing combinations of credit and card|RegExOnFieldName|`.*(CREDIT\|credit)(_\|-)?(CARD\|card).*`|
+|8|Email address pattern|RegExOnSampledData|`[^@]+@[^@]+\.[^@]+`|
+
+### Archivos de generación
+
+[**Script para la creación de la BD principal**](/sql/database_creation.sql)
