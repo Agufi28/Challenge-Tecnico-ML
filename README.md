@@ -214,6 +214,13 @@ Adicionalmente, con la intención de brindar completitud a la API, decidí agreg
 ### Diagrama entidad relación (DER)
 ![DER](/documentation/DER.png)
 
+### Diagrama de secuencia al realizar un escaneo
+
+ Debido a la complejidad asociada al proceso de escaneo, consideré oportuno incluir como parte de la documentación un diagrama de secuencia que exclique la interacción entre los diferentes modelos al recibir una solicitud de escaneo por parte del usuario.
+
+![Diagrama de secuencias al escanear](/documentation/Diagrama%20de%20secuencia%20al%20ejecutar%20un%20escaneo.svg)
+
 ## Deudas técnicas
 - Los creadores de [FastAPI sugieren](https://fastapi.tiangolo.com/tutorial/sql-databases) una forma más elegante de retornar los datos pero requiere modelar las entidades con un objeto proxy creado por ellos que se encuentra en una versión beta. Si bien tiene gran parte de la funcionalidad de SQLAlchemy, debido a la complejidad de los mapeos de herencia utilizados y a que no soporta completamente las funcionalidades de SQLAlchemy no fui capaz de adaptar fácilmente la solución al nuevo modelo. No digo que sea imposible sino que tras dedicarle aproximadamente 6hs, considero que los beneficios obtenibles de lograr dicha implementación no compensan el tiempo invertido en hacerlo. En caso de contar con tiempo adicional luego de satisfacer los demás requerimientos, retomaré la tarea de refactorizar el modelo utilizando las clases provistas por [SQLModel](https://sqlmodel.tiangolo.com/)
 - Testeos exhaustivos: Debido a las complejidades inherentes a que la mayoría de las entidades estén atadas a información provista por la base de datos y a que me concentré en desarrollar una API lo más completa y flexible posible y a documentar lo mejor que pude con la intención de hacerles llegar mi idea detrás del modelo desarrollado, no hice a tiempo de testear el proyecto de forma exhaustiva. Soy consciente de que esto no es una buena práctia y es por eso que lo estoy agregando como deuda técnica. Testee lo más que pude, pero sé que fué poco.
+- Loggin exhaustivo: Si bien la aplicación loguea todas las acciones realizadas por los usuarios y muchos de las excepciones intenamente lanzadas, no está todo contemplado. Sería necesario realizar una refactorización del código agregando loggeos de tipo `info`, `debug` y `error` dentro del modelo de objetos según corresponda.

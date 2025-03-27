@@ -1,0 +1,31 @@
+@startuml Diagrama de secuencia al ejecutar un escaneo
+
+actor User
+boundary WebAPI
+database SQLAlchemy
+entity DatabaseMetadataAdapter
+entity ScanResult
+entity DatabaseSchema
+entity DatabaseTable
+entity DatabaseField
+entity Control
+
+User -> WebAPI: POST /api/v1/databases/{id}/scan
+WebAPI -> SQLAlchemy: Get database with the received id
+SQLAlchemy -> WebAPI: Returns an instance of DatabaseMetadataAdapter
+WebAPI -> SQLAlchemy: Get all the available Controls
+SQLAlchemy -> WebAPI: Return a list of Control instances
+WebAPI -> DatabaseMetadataAdapter: database.scanStructure(sampleSize=n)
+DatabaseMetadataAdapter -> DatabaseMetadataAdapter: self.fetchSamples(sampleSize=n)
+DatabaseMetadataAdapter -> WebAPI: Returns an instance of ScanResult
+WebAPI -> DatabaseMetadataAdapter: database.runControlsOnLastScan(controls)
+DatabaseMetadataAdapter -> ScanResult: scanResult.run(controls)
+ScanResult -> DatabaseSchema: for schema in schemas: schema.run(controls)
+DatabaseSchema -> DatabaseTable: for table in tables: table.run(controls)
+DatabaseTable -> DatabaseField: for field in fields: field.run(controls)
+DatabaseField -> Control: for control in controls: control.executeOn(self)
+Control -> Control: self.__conditionMatches(field)
+Control --> DatabaseField: for tag in self.affectedTags: field.updateTag(tag.tag, tag.affected_score_by)
+WebAPI -> SQLAlchemy: Save the scan results
+WebAPI -> User: Return to the basic ScanResult id for furure quering 
+@enduml
