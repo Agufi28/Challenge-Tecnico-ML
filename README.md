@@ -60,7 +60,7 @@ Finalmente, el método `fetchSamples` es responsable de obtener, para cada campo
 
 > Nota: En caso de existir menos registros en la base de dato que muestras solicitadas, se deberán obtener todos los registros existentes.
 
-Por una cuestión de seguridad, los datos obtenidos en el muestreo **no son peristidos** como parte del resultado. Sólo existen en memoria hasta que los controles finalizan, luego son eliminados. De esta forma se preserva la **confidencialidad** de los mismos.
+Por una cuestión de seguridad, los datos obtenidos en el muestreo **no son persistidos** como parte del resultado. Sólo existen en memoria hasta que los controles finalizan, luego son eliminados. De esta forma se preserva la **confidencialidad** de los mismos.
 
 #### Controles
 
@@ -89,7 +89,7 @@ Gracias a estas dos decisiones, **es posible crear nuevos controles en runtime**
 
 Como se menciona en el apartado sobre [Bases de datos](#bases-de-datos), el proceso de escaneo contempla la obtención de una muestra de datos para cada campo detectado. De esta forma es posible realizar controles no sólo sobre la información del campo como su nombre o tipo sino también sobre pequeñas muestras de la información contenida en ellos. 
 
-Para utilizar acceder a estas muestras desde un control, se debe utilizar el atributo `dataSample` del campo o en su defecto, si se desea ignorar los valores nulos, el método `getDataSampleWithoutNones()`.
+Para acceder a estas muestras desde un control, se debe utilizar el atributo `dataSample` del campo o en su defecto, si se desea ignorar los valores nulos, el método `getDataSampleWithoutNones()`.
 
 ```py
     def _Control__conditionMatches(self, field: DatabaseField):
@@ -216,3 +216,4 @@ Adicionalmente, con la intención de brindar completitud a la API, decidí agreg
 
 ## Deudas técnicas
 - Los creadores de [FastAPI sugieren](https://fastapi.tiangolo.com/tutorial/sql-databases) una forma más elegante de retornar los datos pero requiere modelar las entidades con un objeto proxy creado por ellos que se encuentra en una versión beta. Si bien tiene gran parte de la funcionalidad de SQLAlchemy, debido a la complejidad de los mapeos de herencia utilizados y a que no soporta completamente las funcionalidades de SQLAlchemy no fui capaz de adaptar fácilmente la solución al nuevo modelo. No digo que sea imposible sino que tras dedicarle aproximadamente 6hs, considero que los beneficios obtenibles de lograr dicha implementación no compensan el tiempo invertido en hacerlo. En caso de contar con tiempo adicional luego de satisfacer los demás requerimientos, retomaré la tarea de refactorizar el modelo utilizando las clases provistas por [SQLModel](https://sqlmodel.tiangolo.com/)
+- Testeos exhaustivos: Debido a las complejidades inherentes a que la mayoría de las entidades estén atadas a información provista por la base de datos y a que me concentré en desarrollar una API lo más completa y flexible posible y a documentar lo mejor que pude con la intención de hacerles llegar mi idea detrás del modelo desarrollado, no hice a tiempo de testear el proyecto de forma exhaustiva. Soy consciente de que esto no es una buena práctia y es por eso que lo estoy agregando como deuda técnica. Testee lo más que pude, pero sé que fué poco.
