@@ -274,12 +274,27 @@ Adicionalmente, con la intención de brindar completitud a la API, decidí agreg
 
 ![Diagrama de secuencias al escanear](/documentation/Diagrama%20de%20secuencia%20al%20ejecutar%20un%20escaneo.svg)
 
+## Documentacion - FrontEnd
+
+Dado que el FrontEnd era secundario en este caso y a que mis habilidades más fuertes se encuentran en el back, decidí utilizar librerías que me ayuden a llegar a una versión no tan horrible de la GUI. 
+
+En particular, para desarrollar el Front-End utilicé:
+- [Boostrap](https://getbootstrap.com/) para armar las tablas, modals y botones
+- [SweetAlert2](https://sweetalert2.github.io/) para armar los pup up indicando mensajes de error o exito
+- [jQuery](https://jquery.com/) para interactuar con la API y obtener/enviar la información necesaria en cada caso
+
+
 ## Deudas técnicas
 - Los creadores de [FastAPI sugieren](https://fastapi.tiangolo.com/tutorial/sql-databases) una forma más elegante de retornar los datos pero requiere modelar las entidades con un objeto proxy creado por ellos que se encuentra en una versión beta. Si bien tiene gran parte de la funcionalidad de SQLAlchemy, debido a la complejidad de los mapeos de herencia utilizados y a que no soporta completamente las funcionalidades de SQLAlchemy no fui capaz de adaptar fácilmente la solución al nuevo modelo. No digo que sea imposible sino que tras dedicarle aproximadamente 6hs, considero que los beneficios obtenibles de lograr dicha implementación no compensan el tiempo invertido en hacerlo. En caso de contar con tiempo adicional luego de satisfacer los demás requerimientos, retomaré la tarea de refactorizar el modelo utilizando las clases provistas por [SQLModel](https://sqlmodel.tiangolo.com/)
 - Testeos exhaustivos: Debido a las complejidades inherentes a que la mayoría de las entidades estén atadas a información provista por la base de datos y a que me concentré en desarrollar una API lo más completa y flexible posible y a documentar lo mejor que pude con la intención de hacerles llegar mi idea detrás del modelo desarrollado, no hice a tiempo de testear el proyecto de forma exhaustiva. Soy consciente de que esto no es una buena práctia y es por eso que lo estoy agregando como deuda técnica. Testee lo más que pude, pero sé que fué poco.
 - Loggin exhaustivo: Si bien la aplicación loguea todas las acciones realizadas por los usuarios y muchos de las excepciones intenamente lanzadas, no está todo contemplado. Sería necesario realizar una refactorización del código agregando loggeos de tipo `info`, `debug` y `error` dentro del modelo de objetos según corresponda.
 - Por motivos de trazabilidad y no repudio decidí registrar el usuario que realizó cada operación de creación (POST). Sin embargo, por conflictos con las relaciones recursivas en SQLAlchemy no fui capaz de implementar este control para el caso de `POST /api/v1/users`. Queda pendiente buscar algún mecanismo para solventar la incompatibilidad de SQLAlchemy con este tipo de relaciones.
 - Definir y enforzar una política de contraseñas para los usuarios. Ej. Mínimo 8 caracteres, mayúsculas, minúsculas, símbolos, etc.
+- Debido al limitado tiempo, la GUI sólo contempla las operaciones básicas permitidas por la API. Queda pendiente implementar las demás. Las operaciones actualmente contempladas son:
+    - Listar las bases de datos existentes
+    - Solicitar el escaneo a una de las bases de datos listadas
+    - Ver los resultados del último escaneo realizado a alguna de las bases de datos listadas con sus correspondientes esquemas, tablas, campos y lo más importante, las etiquetas (tags) asignadas a cada campo con su respectivo peso
+
 
 ## Estructura de la base de datos
 
@@ -307,4 +322,5 @@ Como parte del script que genera la estructura de la base de datos para utilizar
 ### Archivos de generación
 
 [**Script para la creación de la BD principal**](/sql/database_creation.sql)
+
 [**Script para la creación de la BD de pruebas**](/sql/test_database_creation.sql)
