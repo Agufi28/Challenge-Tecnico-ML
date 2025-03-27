@@ -39,14 +39,17 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=3306
       - DATABASE_NAME=challengeml
+      - JWT_SECRET=deff1952d59f883ece260e8683fed21ab0ad9a53323eca4f
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRATION_MINUTES=30
     restart: unless-stopped
     ports:
       - 1001:80 #You should probably change the out port(1001) to one you like
 ```
 ## Documentación - Releases
 
-- [`v1.0.1-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene sólo la API funcionando
-- [`v2.0.1-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene tanto la API como la GUI funcionando
+- [`v1.0.2-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v1.0.2-python): Contiene sólo la API funcionando
+- [`v2.0.2-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.2-python): Contiene tanto la API como la GUI funcionando
 
 ## Documentación - Consideraciones particulares
 
