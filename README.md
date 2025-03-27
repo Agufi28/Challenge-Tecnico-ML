@@ -45,8 +45,8 @@ services:
 ```
 ## Documentación - Releases
 
-- [`v1.0.0-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene sólo la API funcionando
-- [`v2.0.0-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene tanto la API como la GUI funcionando
+- [`v1.0.1-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene sólo la API funcionando
+- [`v2.0.1-python`](https://github.com/Agufi28/Challenge-Tecnico-ML/tree/v2.0.0-python): Contiene tanto la API como la GUI funcionando
 
 ## Documentación - Consideraciones particulares
 
