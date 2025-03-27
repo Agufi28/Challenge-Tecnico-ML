@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from typing import Any, Optional
 from sqlalchemy import ForeignKey, String
 from sqlalchemy import Text
@@ -39,9 +40,10 @@ class Control(Base):
         :param name: name of the control
         :param affectedTags: dictionary of the taggs that should be added to the field with their corresponding certanty score. If the tag LAST_NAME should get a 10 points boost when the control match; the dictionary should contain an entry with the tag as key and 10 as value
     """
-    def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], createdBy: User = None):
+    def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], createdBy: User = None, data: dict[str, Any]={}):
         self.name = name
         self.createdBy = createdBy
+        self.raw_data = json.dumps(data)
         for tag, affectedScore in affectedTags.items():
             self.affectedTags.append(ControlAffectedTag(self, tag, affectedScore))
 
@@ -49,7 +51,7 @@ class Control(Base):
         raise Exception("Must be implemented!")
 
     def getData(self) -> dict[str, Any]:
-        raise Exception("Must be implemented!")
+        return json.loads(self.raw_data)
 
     def executeOn(self, field: DatabaseField):
         if self.__conditionMatches(field):

@@ -18,12 +18,12 @@ class RegExOnFieldNameControl(Control):
         :param regex: Regular expression used 
     """
     def __init__(self, name: str, affectedTags: dict[DataTypeTag, int], regex :str, createdBy: User = None):
-        super().__init__(name, affectedTags, createdBy)
-        self.raw_data = json.dumps({'regex': regex})
-
-    # This is the implementation of the get data for the regex scenario. No special parsing is needed since the regex is an string and the raw_data is too
-    def getData(self):
-        return json.loads(self.raw_data)
+        super().__init__(
+            name, 
+            affectedTags, 
+            createdBy=createdBy, 
+            data={'regex': regex}
+        )
 
     # This method only exists to provide aditional semantics and allow for extra values to be stored on the data
     def getRegEx(self):
