@@ -22,6 +22,7 @@ class DatabaseField(Base):
 
     tags: Mapped[list[FieldTag]] = relationship(cascade="all, delete-orphan")
 
+    dataSample = []
 
     def __init__(self, name: str, type: FieldDataTypes):
         self.name = name

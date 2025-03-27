@@ -264,3 +264,4 @@ Como parte del script que genera la estructura de la base de datos para utilizar
 ### Archivos de generación
 
 [**Script para la creación de la BD principal**](/sql/database_creation.sql)
+[**Script para la creación de la BD de pruebas**](/sql/test_database_creation.sql)

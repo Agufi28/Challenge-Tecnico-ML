@@ -12,6 +12,7 @@ from internal.models.DatabaseField import DatabaseField
 from internal.models.FieldTag import FieldTag
 from internal.models.Control import Control
 from internal.models.ScanResult import ScanResult
+from internal.errors import ScanException
 
 from api.models.Databases import DatabaseMetadataAdapterResponse, MySQLDatabaseMetadataAdapterCreationData
 from api.models.Scans import ScanDatabaseResponse
@@ -78,9 +79,11 @@ async def scanDatabase(id: int, session: DBSessionDep, user: AuthenticatedUserDe
     controls = session.scalars(
         select(Control)
     ).all()
-    
-    scan = database.scanStructure(requestedBy=user, dataSampleSize=10)
-    database.runControlsOnLastScan(controls)
+
+    scan = None
+    with session.no_autoflush:
+        scan = database.scanStructure(requestedBy=user, dataSampleSize=10)
+        database.runControlsOnLastScan(controls)
 
     session.add(database)
     session.commit()
